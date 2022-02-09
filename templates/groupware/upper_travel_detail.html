@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+{% load static i18n %}
+{% load humanize %}
+{% load custom_tags %}
+
+{% block css %}
+{% endblock%}
+
+{% block script %}
+<script src="{%static 'js/plugins/datatables.js'%}"></script>
+{% endblock %}
+
+
+{% block content %}
+  <div class="row m-5 p-2">
+    <div class="col-2 d-flex a-center j-center">ExtechKorea</div>
+    <div class="col-5 d-flex a-center j-center">출장여비신청</div>
+    <div class="col-5">
+      <div class="row border">
+        <div class="col-4 d-flex a-center j-center">팀장</div>
+        <div class="col-4 d-flex a-center j-center">검토</div>
+        <div class="col-4 d-flex a-center j-center">승인</div>
+      </div>
+      <div class="row border">
+        <div class="col-4 d-flex a-center j-center height-50">{{acceptor_3}}</div>
+        <div class="col-4 d-flex a-center j-center height-50">{{acceptor_2}}</div>
+        <div class="col-4 d-flex a-center j-center height-50">{{acceptor_1}}</div>
+      </div>
+    </div>
+  </div>
+  <div class="row m-5 p-2">
+    <table>
+      <tr>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">소속</td>
+        <td width="15%" align="center">{{travel.user.team_code}}</td>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1);">직위</td>
+        <td width="15%" align="center">{{travel.user.level}}</td>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1);">성명</td>
+        <td width="15%" align="center">{{travel.user.username}}</td>
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1);">출장구분</td>
+        <td align="center" colspan="4">
+          <div style="display:flex;justify-content:space-around;padding: 10px;">
+            <span>
+            {% if travel.type == "외출" %}
+            ▣
+            {% else %}
+            □
+            {% endif %}
+            외부 출장(8시간 이내)
+            </span>
+            <span>
+            {% if travel.type == "단기출장"%}
+            ▣
+            {% else %}
+            □
+            {% endif %}
+            단기출장(8시간 이상 ~ 7일이내)
+            </span>
+            <span>
+            {% if travel.type == "장기출장"%}
+            ▣
+            {% else %}
+            □
+            {% endif %}
+            장기출장(7일이상)
+            </span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1);">출장기간</td>
+        <td align="left" colspan="4" style="padding:10px;">{{travel.start_date}} 부터 ~ {{travel.end_date}} 까지</td>
+        {% if span_day == 0 %}
+        <td align="center">&nbsp;</td>
+        {% else %}
+        <td align="center">({{span_day}} 박 {{span_day|add:1}}일)</td>
+        {% endif %}
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">출장지</td>
+        <td align="left" colspan="5" style="padding:10px;">
+          {% if travel.location_1 != "" %}
+          {{travel.location_1}}
+          {% endif %}
+          {% if travel.location_2 != None %}
+          , {{travel.location_2}}
+          {% endif %}
+          {% if travel.location_3 != None %}
+          , {{travel.location_3}}
+          {% endif %}
+          {% if travel.location_4 != None %}
+          , {{travel.location_4}}
+          {% endif %}
+          {% if travel.location_5 != None %}
+          , {{travel.location_5}}
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">주소</td>
+        <td align="left" colspan="5" style="padding:10px;">{{travel.address_1}}</td>
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">목적</td>
+        <td align="left" colspan="5" style="padding:10px;">{{travel.why}}</td>
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">동도출장자</td>
+        <td align="left" colspan="5" style="padding:10px;">{{travel.witness}}</td>
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">예상 출장 여비</td>
+        <td align="left" colspan="5" style="padding:10px;">{{total_money|intcomma}} 원</td>
+      </tr>
+    </table>
+    <br>
+    1.교통비
+    <table>
+      <tr>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1);">출발일 기준 {{travel.user.car_oil}}</td>
+        <td width="15%" align="center">{{oil_money|intcomma}} 원</td>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">차량번호</td>
+        <td width="15%" align="center">{{travel.user.car_number}}</td>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1);">차종 / 배기량</td>
+        <td width="15%" align="center">{{travel.user.car_type}} / {{travel.user.car_cc}}cc</td>
+      </tr>
+      <tr>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">연료</td>
+        <td width="15%" align="center">{{travel.user.car_oil}}</td>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1);">공인연비(km/L)</td>
+        <td width="15%" align="center">{{travel.user.car_auth_km}}</td>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1);">실제연비(km/L)</td>
+        <td width="15%" align="center">{{travel.user.car_real_km}}</td>
+      </tr>
+    </table>
+    <br>
+    1-1.차량
+    <table>
+      <tr>
+        <td width="30%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">목적지</td>
+        <td width="30%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">운행거리</td>
+        <td width="20%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">운행거리</td>
+        <td width="20%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">왕복</td>
+      </tr>
+      {% if travel.location_1 != "" %}
+      <tr>
+        <td width="30%" align="center" style="padding:10px;">{{travel.location_1}}</td>
+        <td width="30%" align="center" style="padding:10px;">{{travel.address_1}}</td>
+        <td width="20%" align="center" style="padding:10px;">{{travel.km_1}} Km</td>
+        <td width="20%" align="center" style="padding:10px;">{% if travel.reback_1 == 1 %}{{travel.km_1|multiple:2}} Km{% endif %}</td>
+      </tr>
+      {% endif %}
+      {% if travel.location_2 != None %}
+      <tr>
+        <td width="30%" align="center" style="padding:10px;">{{travel.location_2}}</td>
+        <td width="30%" align="center" style="padding:10px;">{{travel.address_2}}</td>
+        <td width="20%" align="center" style="padding:10px;">{{travel.km_2}} Km</td>
+        <td width="20%" align="center" style="padding:10px;">{% if travel.reback_2 == 1 %}{{travel.km_2|multiple:2}} Km{% endif %}</td>
+      </tr>
+      {% endif %}
+      {% if travel.location_3 != None %}
+      <tr>
+        <td width="30%" align="center" style="padding:10px;">{{travel.location_3}}</td>
+        <td width="30%" align="center" style="padding:10px;">{{travel.address_3}}</td>
+        <td width="20%" align="center" style="padding:10px;">{{travel.km_3}} Km</td>
+        <td width="20%" align="center" style="padding:10px;">{% if travel.reback_3 == 1 %}{{travel.km_3|multiple:2}} Km{% endif %}</td>
+      </tr>
+      {% endif %}
+      {% if travel.location_4 != None %}
+      <tr>
+        <td width="30%" align="center" style="padding:10px;">{{travel.location_4}}</td>
+        <td width="30%" align="center" style="padding:10px;">{{travel.address_4}}</td>
+        <td width="20%" align="center" style="padding:10px;">{{travel.km_4}} Km</td>
+        <td width="20%" align="center" style="padding:10px;">{% if travel.reback_4 == 1 %}{{travel.km_4|multiple:2}} Km{% endif %}</td>
+      </tr>
+      {% endif %}
+      {% if travel.location_5 != None %}
+      <tr>
+        <td width="30%" align="center" style="padding:10px;">{{travel.location_5}}</td>
+        <td width="30%" align="center" style="padding:10px;">{{travel.address_5}}</td>
+        <td width="20%" align="center" style="padding:10px;">{{travel.km_5}} Km</td>
+        <td width="20%" align="center" style="padding:10px;">{% if travel.reback_5 == 1 %}{{travel.km_5|multiple:2}} Km{% endif %}</td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">계산 금액</td>
+        <td align="center" >
+        {{oil_km_money|intcomma}} 원</td>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">총 운행 거리</td>
+        <td align="center" >{{travel.total_km}} Km</td>
+      </tr>
+    </table>
+    <br>
+    2-1.숙박비
+    <table>
+      <tr>
+        <td width="50%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">박</td>
+        <td width="50%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">금액</td>
+      </tr>
+      <tr>
+        <td width="30%" align="center" style="padding:10px;">   
+          {% if span_day == 0 %}
+          &nbsp;
+          {% else %}
+          {{span_day}} 박 x 60,000 원
+          {% endif %}</td>
+        <td width="30%" align="center" style="padding:10px;">{{span_day|multiple:60000|intcomma}} 원</td>
+      </tr>
+    </table>
+    <br>
+    4-1.식대
+    <table>
+      <tr>
+        <td width="50%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">식대</td>
+        <td width="50%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">금액</td>
+      </tr>
+      <tr>
+        <td width="50%" align="center" style="padding:10px;" >{{span_day}} 박 x 3끼 =  {{span_day|multiple:3}} 끼 </td>
+        <td width="50%" align="center" style="padding:10px;" >{{span_day|multiple:3|multiple:8000|intcomma}} 원</td>
+      </tr>
+    </table>
+    <br>
+    5-1.기타 여비
+    <table>
+      <tr>
+        <td width="50%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">기타 발생금액</td>
+        <td width="50%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">내용</td>
+      </tr>
+      <tr>
+        <td width="50%" align="center" style="padding:10px;" >{{travel.eatandother_pay|intcomma}} 원</td>
+        <td width="50%" align="center" style="padding:10px;" >{{travel.eatandother_comment}}</td>
+      </tr>
+    </table>
+  </div>
+    <div class="row mt-5">
+      <div class="col-md-4">
+        &nbsp;
+      </div>
+      <div class="col-md-4 text-center">
+        <div class="d-flex" style="justify-content: center;">
+          <div class="btn_outline_black w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px; margin-left:10px;" onclick="location.href='{% url 'groupware:upper_travel_list' %}'">확인</div>
+        </div>
+      </div>
+      <div class="col-md-4" style="margin-bottom:100px;">
+        &nbsp;
+       </div>
+    </div>
+  </div>
+</form>
+
+{% block endscript %}
+
+{% endblock %}
+
+{% endblock %}
+
+

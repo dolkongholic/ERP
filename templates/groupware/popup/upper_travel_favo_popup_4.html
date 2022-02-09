@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript">
+        function sendChildValue(address,location,km){
+        opener.setChildValue_4(address,location,km);
+        window.close();
+        } 
+    </script>
+
+</head>
+<body>
+    <table>
+        <tr>
+            <td>목적지</td>
+            <td>주소</td>
+            <td>거리</td>
+        </tr>
+        <tr>
+            <td><a href="javascript:sendChildValue('충청남도 서산시 대산읍 대죽리','(주)LG 화학대산공장 )','500')"> 대산 LG 화학 </a></td>
+            <td><a href="javascript:sendChildValue('충청남도 서산시 대산읍 대죽리','(주)LG 화학대산공장 )','500')">충청남도 서산시 대산읍 대죽리</a></td>
+            <td><a href="javascript:sendChildValue('충청남도 서산시 대산읍 대죽리','(주)LG 화학대산공장 )','500')">500km</a></td>
+        </tr>
+    </table>
+</body>
+</html>
+

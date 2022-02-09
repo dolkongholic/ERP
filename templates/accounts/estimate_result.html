@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content_nav %}
+    <div class="content_nav">
+        <div class="location">회계 <i class="fas fa-chevron-right"></i> </div>
+        <div class="nav">
+            <div class="nav_item active" role="button" onclick="location.href='{% url 'accounts:estimate' %}'">자격심사 견적</div>            
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+    
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      var data = google.visualization.arrayToDataTable([
+        ['차수', '금액'],
+        {% for a in result_lists %}
+        [ {{forloop.counter}},{{a}}],
+        {% endfor %}
+      ]);
+
+      var options = {
+        title: '금액 분포도',
+        hAxis: {title: '차수', minValue: 0, maxValue: 15},
+        vAxis: {title: '금액', minValue: {{base_money_range_down}}, maxValue:{{base_moeny_range_up}}},
+        legend: 'none'
+      };
+
+      var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+    }
+  </script>
+
+    <div class="card" style="align-items: left;">
+        <div class="card_title">
+            적격 심사 공고 견적 시뮬레이션 결과
+        </div>
+
+        <div class="card_content">
+            <div class="card_content__item">
+                <table>
+                    <tr>
+                        <td>예비가격기초금액</td>
+                        <td colspan="2">{{base_money}} 원</td>
+                    </tr>
+                    <tr class="bottom_none_border">
+                        <td rowspan="3">산정범위 </td>
+                        <td class="right_none_border"> + {{range_up}} % </td>
+                        <td> 중 &nbsp;&nbsp; {{range_up_count}} 개 </td>
+                    </tr>
+                    <tr>
+                        <td class="right_none_border"> + {{range_down}} % </td>
+                        <td> 중 &nbsp;&nbsp; {{range_down_count}} 개 </td>
+                    </tr>
+                    <tr>
+                        <td> 종합 선정 수</td>
+                        <td>{{range_total}} 개</td>
+                    </tr>
+                    <tr>
+                        <td >낙하하한율 </td>
+                        <td colspan="2">{{rate_drop}} %</td>
+                    </tr>
+                    <tr>
+                        <td >반복횟수 </td>
+                        <td colspan="2">{{count}} 회</td>
+                    </tr>
+
+                    <tr>
+                        <td >최종 평균값 </td>
+                        <td colspan="2">{{last_result|intcomma}} 원</td>
+                    </tr>
+                    <tr>
+                        <td >최저 낙찰값</td>
+                        <td colspan="2">{{last_result_limit|intcomma}} 원</td>
+                    </tr>
+                    <tr>
+                        <td >투찰 예상값 </td>
+                        <td colspan="2">{{target_result_up|intcomma}} 원 ~ {{target_result_down|intcomma}} 원</td>
+                    </tr>
+                </table>
+            </div> <!-- card_content__item -->
+            <div class="card_content__item">
+                <div id="chart_div" style="width: 900px; height: 500px;"></div>
+            </div> <!-- card_content__item -->
+        </div> <!-- card_content -->
+ <!--
+        <div class="card_content">
+            <div class="card_contetent__item">
+                <table>
+                    {% for result_list in result_lists %}
+                    <tr>
+                        <td> {{forloop.counter}} 회</td>
+                        <td> {{result_list|intcomma}} 원</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div> 
+            <div class="card_contetent__item">
+                
+            </div>
+        </div>card_content -->
+    </div> <!-- card -->
+
+{% endblock %}

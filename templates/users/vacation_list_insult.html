@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block script %}
+<script src="{%static 'js/plugins/datatables.js'%}"></script>
+{% endblock %}
+
+{% block content_nav %}
+    <div class="content_nav">
+        <div class="location">인사/근태 <i class="fas fa-chevron-right"></i> 근태 <i class="fas fa-chevron-right"></i> </div>
+        <div class="nav">
+            <div class="nav_item active" role="button" onclick="location.href='{% url 'users:vacation_list' %}'">항목관리</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'users:vacation_use_list' %}'">휴가사용실적현황</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'users:vacation_remain' %}'">잔여휴가현황</div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+<div class="content_row d-flex valign_center">
+  <div class="{% if nav_sub_3 == '항목추가' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'users:vacation_list_insult' %}'">+ 항목 추가</div>
+  <div class="{% if nav_sub_3 == '항목리스트' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:140px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'users:vacation_list' %}'">근태 항목 리스트</div>
+</div>
+<div class="content_row_line">
+  &nbsp;
+</div>
+
+<form method="POST" enctype="multipart/form-data" id="insult_form" autocomplete="off" >
+  {% csrf_token %} 
+  <div class="content_row">
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="type">종류</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" id="type" name="type" value="{{data.type}}">
+        {% if form.type.errors %}
+        <span style="color:red">{{form.type.errors}}</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="add_date">추가 일수</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" id="add_date" name="add_date" value="{{data.add_date}}">
+          {% if form.add_date.errors %}
+          <span style="color:red">{{form.add_date.errors}}</span>
+          {% endif %}
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="start_date">시작일</label>
+      </div>
+      <div class="col-md-11">
+          <input type="date" id="start_date" name="start_date" value="{{data.start_date}}">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="end_date">종료일</label>
+      </div>
+      <div class="col-md-11">
+          <input type="date" id="end_date" name="end_date" value="{{data.end_date}}">
+          {% if form.end_date.errors %}
+          <span style="color:red">{{form.end_date.errors}}</span>
+          {% endif %}
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="target_people">대상자</label>
+      </div>
+      <div class="col-md-11">
+          <select multiple id="target_people" name="target_people" class="h-100">
+            {% for user in users %}
+            <option value="{{user.pk}}" {%if user.pk in data.target_people %} selected {% endif %}> {{user.pk}} / {{data.target_people}}:{{user.user_number}} / {{user.username}} {{user.level}} / {{user.team_code}}</option>
+            {% endfor %}
+          </select>
+          {% if form.target_people.errors %}
+          <span style="color:red">{{form.target_people.errors}}</span>
+          {% endif %}
+      </div>
+    </div>
+    
+    <div class="row mt-5">
+      <div class="col-md-4">
+        &nbsp;
+      </div>
+      <div class="col-md-4 text-center">
+        <div class="d-flex" style="justify-content: center;">
+            <div onclick="document.getElementById('insult_form').submit(); this.onclick=null;"  class="btn_outline_black w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;">작성 완료</div>
+            <div onclick="location.href='{% url 'users:vacation_list' %}'" class="btn_outline_black w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;">취소</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        &nbsp;
+       </div>
+    </div>
+  </div>
+</form>
+
+{% block endscript %}
+
+{% endblock %}
+
+{% endblock %}
+
+

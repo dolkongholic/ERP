@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block script %}
+<script src="{%static 'js/plugins/datatables.js'%}"></script>
+{% endblock %}
+
+{% block content_nav %}
+    <div class="content_nav">
+        <div class="location">재고 <i class="fas fa-chevron-right"></i> 교육 <i class="fas fa-chevron-right"></i> </div>
+        <div class="nav">
+          <div class="nav_item" role="button" onclick="location.href='{% url 'educations:educations_buy_list' %}'">발주서</div>
+          <div class="nav_item active" role="button" onclick="location.href='{% url 'educations:educations_plan_list' %}'">견적서</div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+<div class="content_row d-flex valign_center">
+  <div class="{% if nav_sub_3 == '견적서작성' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;"  onclick="location.href='{% url 'educations:educations_plan_insult' %}'">+ 견적서 작성</div>
+  <div class="{% if nav_sub_3 == '견적서현황' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:100px; border-radius: 4px; margin-right:10px;"  onclick="location.href='{% url 'educations:educations_plan_list' %}'">견적서 현황</div>
+</div>
+<div class="content_row_line">
+  &nbsp;
+</div>
+<div class="content_row">
+  <form id="login_form">
+    <table class="table table-flush" id="datatable-basic">
+      <thead class="thead-light">
+        <tr>
+          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">품목코드</th>
+          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">품목명</th>
+          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">규격</th>
+          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">단위</th>
+          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">출고단가</th>
+          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">그룹명</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="text-sm font-weight-normal">00001</td>
+          <td class="text-sm font-weight-normal">케이블 글랜드</td>
+          <td class="text-sm font-weight-normal">12</td>
+          <td class="text-sm font-weight-normal">-</td>
+          <td class="text-sm font-weight-normal">-</td>
+          <td class="text-sm font-weight-normal">그룹1</td>
+        </tr>
+        <tr>
+          <td class="text-sm font-weight-normal">00002</td>
+          <td class="text-sm font-weight-normal">해외운송비</td>
+          <td class="text-sm font-weight-normal">12</td>
+          <td class="text-sm font-weight-normal">-</td>
+          <td class="text-sm font-weight-normal">-</td>
+          <td class="text-sm font-weight-normal">그룹2</td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+</div>
+
+{% block endscript %}
+  <script type="text/javascript">
+    if (document.getElementById('datatable-basic')) {
+      const dataTableSearch = new simpleDatatables.DataTable("#datatable-basic", {
+        searchable: true,
+        fixedHeight: false,
+        perPage: 7
+      });
+
+      document.querySelectorAll(".export").forEach(function(el) {
+        el.addEventListener("click", function(e) {
+          var type = el.dataset.type;
+
+          var data = {
+            type: type,
+            filename: "soft-ui-" + type,
+          };
+
+          if (type === "csv") {
+            data.columnDelimiter = "|";
+          }
+
+          dataTableSearch.export(data);
+        });
+      });
+    };
+  </script>
+{% endblock %}
+
+{% endblock %}
+
+

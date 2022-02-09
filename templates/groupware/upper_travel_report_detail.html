@@ -1,0 +1,382 @@
+{% extends "base.html" %}
+{% load static i18n %}
+{% load humanize %}
+{% load custom_tags %}
+
+{% block css %}
+<style>
+  table, td, th {
+    border: 1px solid rgba(0,0,0,0.1);
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .filebox label { 
+    font-size: inherit; 
+    cursor: pointer; 
+  } 
+.filebox input[type="file"] {
+  /* 파일 필드 숨기기 */ 
+  position: absolute; 
+  width: 1px; 
+  height: 1px; 
+  padding: 0; 
+  margin: -1px; 
+  overflow: hidden; 
+  clip:rect(0,0,0,0); 
+  border: 0; 
+}
+
+.bigPictureWrapper {
+  position: absolute;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  width:100%;
+  height:100%;
+  background-color: gray; 
+  z-index: 100;
+  background:rgba(255,255,255,0.5);
+}
+.bigPicture {
+  position: relative;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+</style>
+{% endblock%}
+{% block script %}
+<script src="{%static 'js/plugins/datatables.js'%}"></script>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+{% endblock %}
+
+{% block content_nav %}
+    <div class="content_nav">
+        <div class="location">그룹웨어 <i class="fas fa-chevron-right"></i> 전자결재 <i class="fas fa-chevron-right"></i> </div>
+        <div class="nav">
+            <div class="nav_item active" role="button" onclick="location.href='{% url 'groupware:upper_travel_list' %}'">출장여비</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'groupware:upper_buy_list' %}'">품의서</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'groupware:upper_pay_list' %}'">지출결의서</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'groupware:upper_free_list' %}'">자유양식</div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+<div class='bigPictureWrapper'>
+  <div class='bigPicture'>
+  </div>
+</div>
+<div class="content_row d-flex valign_center">
+  <div class="{% if nav_sub_3 == '출장여비작성' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'groupware:upper_travel_insult' %}'">+ 출장여비 작성</div>
+  <div class="{% if nav_sub_3 == '출장보고서작성' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'groupware:upper_travel_report' %}'">+ 출장보고서작성</div>
+  <div class="{% if nav_sub_3 == '출장여비리스트' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:100px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'groupware:upper_travel_list' %}'">출장여비 목록</div>
+</div>
+<div class="content_row_line">
+  &nbsp;
+</div>
+<form method="POST" enctype="multipart/form-data" id="insult_form" autocomplete="off" >
+  {% csrf_token %}
+  <div class="row m-5 p-2">
+    <div class="col-2 d-flex a-center j-center">ExtechKorea</div>
+    <div class="col-5 d-flex a-center j-center">출장여비신청</div>
+    <div class="col-5">
+      <div class="row border">
+        <div class="col-4 d-flex a-center j-center">팀장</div>
+        <div class="col-4 d-flex a-center j-center">검토</div>
+        <div class="col-4 d-flex a-center j-center">승인</div>
+      </div>
+      <div class="row border">
+        <div class="col-4 d-flex a-center j-center height-50">{{acceptor_3}}</div>
+        <div class="col-4 d-flex a-center j-center height-50">{{acceptor_2}}</div>
+        <div class="col-4 d-flex a-center j-center height-50">{{acceptor_1}}</div>
+      </div>
+    </div>
+  </div>
+  <div class="row m-5 p-2">
+    <table>
+      <tr>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">소속</td>
+        <td width="15%" align="center">{{travel.user.team_code}}</td>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1);">직위</td>
+        <td width="15%" align="center">{{travel.user.level}}</td>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1);">성명</td>
+        <td width="15%" align="center">{{travel.user.username}}</td>
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1);">출장구분</td>
+        <td align="center" colspan="4">
+          <div style="display:flex;justify-content:space-around;padding: 10px;">
+            <span>
+            {% if travel.type == "외출" %}
+            ▣
+            {% else %}
+            □
+            {% endif %}
+            외부 출장(8시간 이내)
+            </span>
+            <span>
+            {% if travel.type == "단기출장"%}
+            ▣
+            {% else %}
+            □
+            {% endif %}
+            단기출장(8시간 이상 ~ 7일이내)
+            </span>
+            <span>
+            {% if travel.type == "장기출장"%}
+            ▣
+            {% else %}
+            □
+            {% endif %}
+            장기출장(7일이상)
+            </span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1);">출장기간</td>
+        <td align="left" colspan="4" style="padding:10px;">{{travel.start_date}} 부터 ~ {{travel.end_date}} 까지</td>
+        {% if span_day == 0 %}
+        <td align="center">&nbsp;</td>
+        {% else %}
+        <td align="center">({{span_day}} 박 {{span_day|add:1}}일)</td>
+        {% endif %}
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">출장지</td>
+        <td align="left" colspan="5" style="padding:10px;">
+          {% if travel.location_1 != "" %}
+          {{travel.location_1}}
+          {% endif %}
+          {% if travel.location_2 != None %}
+          , {{travel.location_2}}
+          {% endif %}
+          {% if travel.location_3 != None %}
+          , {{travel.location_3}}
+          {% endif %}
+          {% if travel.location_4 != None %}
+          , {{travel.location_4}}
+          {% endif %}
+          {% if travel.location_5 != None %}
+          , {{travel.location_5}}
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">주소</td>
+        <td align="left" colspan="5" style="padding:10px;">{{travel.address_1}}</td>
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">목적</td>
+        <td align="left" colspan="5" style="padding:10px;">{{travel.why}}</td>
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">동도출장자</td>
+        <td align="left" colspan="5" style="padding:10px;">{{travel.witness}}</td>
+      </tr>
+    </table>
+    <br>
+    1. 지급 금액
+    <table>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">차량 운행비</td>
+        <td align="left" style="padding:10px;">{{total_money|intcomma}} 원</td>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">교통비</td>
+        <td align="left" style="padding:10px;">{{hipass_total|intcomma}} 원</td>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">숙식비</td>
+        <td align="left" style="padding:10px;">{{sleep_total|intcomma}} 원</td>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">식대비</td>
+        <td align="left" style="padding:10px;">{{food_total|intcomma}} 원</td>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">기타여비</td>
+        <td align="left" style="padding:10px;">{{other_total|intcomma}} 원</td>
+      </tr>      
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">출장 여비 지급 금액</td>
+        <td align="left" colspan="5" style="padding:10px;">{{total_pay_money|intcomma}} 원</td>
+      </tr>
+    </table>
+    <br>
+    1-1.교통비
+    <table>
+      <tr>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1);">출발일 기준 {{travel.user.car_oil}}</td>
+        <td width="15%" align="center">{{oil_money|intcomma}} 원</td>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">차량번호</td>
+        <td width="15%" align="center">{{travel.user.car_number}}</td>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1);">차종 / 배기량</td>
+        <td width="15%" align="center">{{travel.user.car_type}} / {{travel.user.car_cc}}cc</td>
+      </tr>
+      <tr>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">연료</td>
+        <td width="15%" align="center">{{travel.user.car_oil}}</td>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1);">공인연비(km/L)</td>
+        <td width="15%" align="center">{{travel.user.car_auth_km}}</td>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1);">실제연비(km/L)</td>
+        <td width="15%" align="center">{{travel.user.car_real_km}}</td>
+      </tr>
+    </table>
+    <br>
+    1-2.차량 운행 지도 등록
+    <table>
+      <tr>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">지도</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">출발지</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">도착지</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">거리</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">왕복</td>
+      </tr>
+      {% for car in car_list %}
+      <tr>
+        <td width="14%" align="center"><img src='{{car.img.url}}' width="300px" height="300px"/></td>
+        <td width="14%" align="center">{{car.start}}</td>
+        <td width="14%" align="center">{{car.end}}</td>
+        <td width="14%" align="center">{{car.km}}</td>
+        <td width="14%" align="center">{{car.oneway}}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <br>
+    1-3. 통행료 영수증
+    <table>
+      <tr>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">영수증</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">날짜</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">출발지</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">도착지</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">금액</td>
+      </tr>
+      {% for hipass in hipass_list %}
+      <tr>
+        <td width="14%" align="center"><img src='{{hipass.img.url}}' width="300px" height="300px"/></td>
+        <td width="14%" align="center">{{hipass.date}}</td>
+        <td width="14%" align="center">{{hipass.start}}</td>
+        <td width="14%" align="center">{{hipass.end}}</td>
+        <td width="14%" align="center">{{hipass.pay}}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <br>
+    1-4.숙박비 영수증
+    <table>
+      <tr>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">지도</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">날짜</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">금액</td>
+      </tr>
+      {% for sleep in sleep_list %}
+      <tr>
+        <td width="14%" align="center"><img src='{{sleep.img.url}}' width="300px" height="300px"/></td>
+        <td width="14%" align="center">{{sleep.date}}</td>
+        <td width="14%" align="center">
+          {% if sleep.pay > 60000 %}
+            <del>{{sleep.pay}} 원</del> &nbsp;&nbsp;->&nbsp;&nbsp; 60,000원
+          {% else %}
+           {{sleep.pay}} 원
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+    <br>
+    1-5.식대 영수증
+    <table>
+      <tr>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">영수증</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">날짜</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">금액</td>
+      </tr>
+      {% for food in food_list %}
+      <tr>
+        <td width="14%" align="center"><img src='{{food.img.url}}' width="300px" height="300px"/></td>
+        <td width="14%" align="center">{{food.date}}</td>
+        <td width="14%" align="center">
+          {% if food.pay > 8000 %}
+          <del>{{food.pay}} 원</del> &nbsp;&nbsp;->&nbsp;&nbsp; 8,000원
+        {% else %}
+         {{food.pay}} 원
+        {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+    <br>
+    1-6.기타 여비 영수증
+    <table>
+      <tr>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">영수증</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">내용</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">금액</td>
+      </tr>
+      {% for other in other_list %}
+      <tr>
+        <td width="14%" align="center"><img src='{{other.img.url}}' width="300px" height="300px"/></td>
+        <td width="14%" align="center">{{other.comment}}</td>
+        <td width="14%" align="center">{{other.pay}}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    2. 출장 보고서
+    <table>
+      <tr>
+        <td width="100%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">출장 보고서</td>
+      </tr>
+      <tr>
+        <td width="100%" align="center">{{report_detail_model.comment}}</td>
+      </tr>
+    </table>
+  </div>
+    <div class="row mt-5">
+      <div class="col-md-4">
+        &nbsp;
+      </div>
+      <div class="col-md-4 text-center">
+        <div class="d-flex" style="justify-content: center;">
+          <div class="btn_outline_black w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px; margin-left:10px;" onclick="location.href='{% url 'groupware:upper_travel_report' %}'">확인</div>
+        </div>
+      </div>
+      <div class="col-md-4" style="margin-bottom:100px;">
+        &nbsp;
+       </div>
+    </div>
+  </div>
+</form>
+
+
+
+{% block endscript %}
+<script type="text/javascript">
+	$(document).ready(function (e){
+		
+		$(document).on("click","img",function(){
+			var path = $(this).attr('src')
+			showImage(path);
+		});//end click event
+		
+		function showImage(fileCallPath){
+		    
+		    $(".bigPictureWrapper").css("display","flex").show();
+		    
+		    $(".bigPicture")
+		    .html("<img src='"+fileCallPath+"' >")
+		    .animate({width:'100%', height: '100%'}, 500);
+		    
+		  }//end fileCallPath
+		$(".bigPictureWrapper").on("click", function(e){
+		    $(".bigPicture").animate({width:'0%', height: '0%'}, 500);
+		    setTimeout(function(){
+		      $('.bigPictureWrapper').hide();
+		    }, 500);
+		  });//end bigWrapperClick event
+	});
+</script>
+{% endblock %}
+
+{% endblock %}
+
+

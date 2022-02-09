@@ -1,0 +1,212 @@
+{% load static i18n %}
+
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/style.css'%}">
+    <link rel="stylesheet" href="{% static 'css/card.css'%}">
+    <link href="{% static 'css/nucleo-icons.css'%}" rel="stylesheet">
+    {% block css %}
+    {% endblock%}
+    <!-- <link rel="stylesheet" href="{% static 'css/soft-ui-dashboard.css'%}"> -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    {% block script %}
+    {% endblock %}
+    <title>Ex-tech Kroea ERP</title>
+</head>
+<body>
+
+    {% if messages %}
+        <div class="messages">
+        {% for message in messages %}
+            <div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %}>
+                {{ message.message }}
+            </div>
+        {% endfor %}
+        </div>
+    {% endif %} 
+
+
+    <!-- nav -->
+    <div class="top">
+        <div class="top__logo" role="button" onclick="location.href='{% url 'core:index' %}'">
+            Ex-TechKorea<b>ERP</b>
+        </div>
+        <div class="top__login">
+            <div clas="top__login__box">
+                <div class="top__login__id">
+                    {{user.username}}
+                </div>
+                <div class="top__login__email">
+                    {{user.email}}
+                </div>
+            </div>
+            <div class="top__login__img">
+                {% if user.avatar == None %}
+                <img src="{{user.avatar.url}}" />
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="main">
+        <div class="nav_menu">
+            <div class="nav_menu__top_box">
+                <div class="nav_menu__top_box__left" role="button" onclick="location.href='{% url 'schedules:group_schedule' %}'">
+                    <span>일정보기</span>
+                </div>
+                <div class="nav_menu__top_box__right" role="button" onclick="location.href='{% url 'users:mypage' %}'">
+                    마이페이지
+                </div>
+            </div>
+            <div class="nav_menu__top_icon_box">
+                <div class="nav_menu__top_icon_box__icon" role="button">
+                    <i class="far fa-bell"></i><p>알람</p>
+                </div>
+                <div class="nav_menu__top_icon_box__icon" role="button" onclick="location.href='{% url 'users:ready'%}'">
+                    <i class="fas fa-paper-plane"></i><p>결재대기</p>
+                </div>
+            </div>
+            <div class="nav_menu__menugroup">
+                <div class="nav_menu__menugroup_main" data-toggle="collapse" href="#nav_menu_1" role="button" aria-expanded="true">
+                    <i class="ni ni-bold-down"></i> 그룹웨어
+                </div>
+                    <div id="nav_menu_1" class="collapse nav_menu__menugroup_sub {% if nav_main == '그룹웨어' %} show {% endif %}">
+                        <div class="nav_menu__menugroup_sub__item"> <i class="ni ni-calendar-grid-58 mr-5"></i> 일정 관리 </div>
+                        <div class="collapse show nav_menu__menugroup_sub__item" data-toggle="collapse" href="#nav_menu_1_sub_1" role="button" aria-expanded="false"> <i class="ni ni-bold-down"></i> 업무관리</div>
+                            <div id="nav_menu_1_sub_1" class="collapse">
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-paper-diploma mr-5"></i>교육개발팀</div>
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-settings mr-5"></i>기술지원팀</div>
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-atom mr-5"></i>방폭공사팀</div>
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-ruler-pencil mr-5"></i>방폭설계팀</div>
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-palette mr-5"></i>전략기획팀</div>
+                            </div> 
+                        <div class="collapse show nav_menu__menugroup_sub__item" data-toggle="collapse" href="#nav_menu_1_sub_2" role="button" aria-expanded="false"> <i class="ni ni-bold-down"></i> 전자결재</div>
+                            <div id="nav_menu_1_sub_2" class="collapse {% if nav_sub_1 == '전자결재' %} show {% endif %}">
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '출장여비' %} active {% endif %}" role="button" onclick="location.href='{% url 'groupware:upper_travel_list' %}'"><i class="ni ni-delivery-fast mr-5"></i>출장여비</div>
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '품의서' %} active {% endif %}" role="button" onclick="location.href='{% url 'groupware:upper_buy_list' %}'"><i class="ni ni-book-bookmark mr-5"></i>품의서</div>
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '지출결의서' %} active {% endif %}" role="button" onclick="location.href='{% url 'groupware:upper_pay_list' %}'"><i class="ni ni-money-coins mr-5"></i>지출결의서</div>
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '자유양식' %} active {% endif %}" role="button" onclick="location.href='{% url 'groupware:upper_free_list' %}'"><i class="ni ni-tablet-button mr-5"></i>자유양식</div>
+                            </div>  
+                        <div class="nav_menu__menugroup_sub__item {% if nav_sub_1 == '고객관리' %} active {% endif %}" role="button" onclick="location.href='{% url 'groupware:customer_care_list' %}'""><i class="ni ni-chat-round mr-5"></i>고객관리</div>          
+                        <div class="nav_menu__menugroup_sub__item {% if nav_sub_1 == '대외문서관리' %} active {% endif %}" role="button" onclick="location.href='{% url 'groupware:letter_box_list' %}'""><i class="ni ni-box-2 mr-5"></i>대외문서관리</div>          
+                    </div>    
+                <div class="nav_menu__menugroup_main" data-toggle="collapse" href="#nav_menu_2" role="button" aria-expanded="true">
+                    <i class="ni ni-bold-down"></i> 재고
+                </div>
+                    <div id="nav_menu_2" class="collapse nav_menu__menugroup_sub  {% if nav_main == '재고' %} show {% endif %}">
+                        <div class="collapse show nav_menu__menugroup_sub__item" data-toggle="collapse" href="#nav_menu_2_sub_1" role="button" aria-expanded="true"><i class="ni ni-bold-down"></i> 기초등록</div>
+                            <div id="nav_menu_2_sub_1" class="collapse {% if nav_sub_1 == '기초등록' %} show {% endif %}">
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '품목관리' %} active {% endif %}" role="button" onclick="location.href='{% url 'products:products_list' %}'"><i class="ni ni-archive-2 mr-5"></i> 품목관리</div>
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '거래처관리' %} active {% endif %}" role="button" onclick="location.href='{% url 'products:companies_list' %}'"><i class="ni ni-bullet-list-67 mr-5"></i>거래처관리</div>
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '거래처그룹관리' %} active {% endif %}" role="button" onclick="location.href='{% url 'products:companies_group_list' %}'"><i class="ni ni-delivery-fast mr-5"></i>거래처그룹관리</div>
+                            </div> 
+                        <div class="collapse show nav_menu__menugroup_sub__item" data-toggle="collapse" href="#nav_menu_2_sub_2" role="button" aria-expanded="false"><i class="ni ni-bold-down"></i> 자재관리</div>
+                            <div id="nav_menu_2_sub_2" class="collapse {% if nav_sub_1 == '자재관리' %} show {% endif %}">
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '자재관리재고현황' %} active {% endif %}" role="button" onclick="location.href='{% url 'products:products_now_list' %}'"><i class="ni ni-bag-17 mr-5"></i> 재고현황</div>
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '자재관리발주서' %} active {% endif %}" role="button" onclick="location.href='{% url 'products:products_buy_list' %}'"><i class="ni ni-basket mr-5"></i> 발주서</div>
+                                <!-- <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-folder-17 mr-5"></i> 거래명세서</div>
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-collection mr-5"></i> 발주서</div>
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-ungroup mr-5"></i> 발주보고서</div> -->
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '견적서' %} active {% endif %}" role="button" onclick="location.href='{% url 'products:products_plan_list' %}'"><i class="ni ni-email-83 mr-5"></i> 견적서</div>
+                            </div>  
+                        <div class="collapse show nav_menu__menugroup_sub__item" data-toggle="collapse" href="#nav_menu_2_sub_3" role="button" aria-expanded="false"><i class="ni ni-bold-down"></i> 교육</div>
+                            <div id="nav_menu_2_sub_3" class="collapse {% if nav_sub_1 == '교육' %} show {% endif %}">
+                                <!-- <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-compass-04 mr-5"></i> 발주현황</div> -->
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '교육발주서' %} active {% endif %}" role="button" onclick="location.href='{% url 'educations:educations_buy_list' %}'"><i class="ni ni-collection mr-5"></i> 발주서</div>
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '교육견적서' %} active {% endif %}" role="button" onclick="location.href='{% url 'educations:educations_plan_list' %}'"><i class="ni ni-email-83 mr-5"></i> 견적서</div>
+                                <!-- <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-folder-17 mr-5"></i> 거래명세서</div> -->
+                            </div>  
+                        <div class="collapse show nav_menu__menugroup_sub__item" data-toggle="collapse" href="#nav_menu_2_sub_4" role="button" aria-expanded="false"><i class="ni ni-bold-down"></i>기술(컨설팅)</div>
+                            <div id="nav_menu_2_sub_4" class="collapse {% if nav_sub_1 == '기술' %} show {% endif %}">
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '기술견적서' %} active {% endif %}" role="button" onclick="location.href='{% url 'consultings:consultings_plan_list' %}'"><i class="ni ni-email-83 mr-5"></i> 견적서</div>
+                                <!-- <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-folder-17 mr-5"></i> 거래명세서</div> -->
+                            </div>  
+                        <div class="collapse show nav_menu__menugroup_sub__item" data-toggle="collapse" href="#nav_menu_2_sub_5" role="button" aria-expanded="false"><i class="ni ni-bold-down"></i>기타관리 <b class="caret"></b></div>
+                            <div id="nav_menu_2_sub_5" class="collapse {% if nav_sub_1 == '기타' %} show {% endif %}">
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '기타교재재고관리' %} active {% endif %}" role="button" onclick="location.href='{% url 'etc:etc_books_list' %}'"><i class="ni ni-cart mr-5"></i> 교재재고관리</div>
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '기타주차권관리' %} active {% endif %}" role="button" onclick="location.href='{% url 'etc:etc_parking_list' %}'"><i class="ni ni-credit-card mr-5"></i> 주차권관리</div>
+                            </div>  
+                    </div>    
+                <div class="nav_menu__menugroup_main" data-toggle="collapse" href="#nav_menu_3" role="button" aria-expanded="true">
+                    <i class="ni ni-bold-down"></i> 인사/근태
+                </div>
+                    <div id="nav_menu_3" class="collapse {% if nav_main == '인사/근태' %} show {% endif %} nav_menu__menugroup_sub">
+                        <div class="collapse show nav_menu__menugroup_sub__item" data-toggle="collapse" href="#nav_menu_3_sub_1" role="button" aria-expanded="true"><i class="ni ni-bold-down"></i>인사</div>
+                            <div id="nav_menu_3_sub_1" class="collapse {% if nav_sub_1 == '인사' %} show {% endif %}">
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '조직도' %} active {% endif %}" role="button" onclick="location.href='{% url 'users:group'%}'"><i class="ni ni-align-center mr-5"></i> 조직도</div>
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '사원등록' %} active {% endif %}" role="button" onclick="location.href='{% url 'users:insult_user'%}'"><i class="ni ni-single-02 mr-5"></i> 사원등록</div>
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '증명서인쇄' %} active {% endif %}" role="button" onclick="location.href='{% url 'users:print'%}'"><i class="ni ni-paper-diploma mr-5"></i> 증명서인쇄</div>
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '계약서관리' %} active {% endif %}" role="button" onclick="location.href='{% url 'users:file_box'%}'"><i class="ni ni-tag mr-5"></i> 계약서관리</div>
+                            </div> 
+                            <div class="collapse show nav_menu__menugroup_sub__item" data-toggle="collapse" href="#nav_menu_3_sub_2" role="button" aria-expanded="false"><i class="ni ni-bold-down"></i>근태</div>
+                            <div id="nav_menu_3_sub_2" class="collapse {% if nav_sub_1 == '근태' %} show {% endif %}">
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '항목관리' %} active {% endif %}" role="button" onclick="location.href='{% url 'users:vacation_list'%}'"><i class="ni ni-settings-gear-65 mr-5"></i> 항목관리</div>
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '휴가사용실적현황' %} active {% endif %}" role="button" onclick="location.href='{% url 'users:vacation_use_list'%}'"><i class="ni ni-user-run mr-5"></i> 휴가사용실적현황</div>
+                                <div class="nav_menu__menugroup_sub_sub__item {% if nav_sub_2 == '잔여휴가현황' %} active {% endif %}" role="button" onclick="location.href='{% url 'users:vacation_remain'%}'"><i class="ni ni-user-run mr-5"></i> 잔여휴가현황</div>
+                            </div>     
+                    </div> 
+                <div class="nav_menu__menugroup_main" data-toggle="collapse" href="#nav_menu_4" role="button" aria-expanded="true">
+                    <i class="ni ni-bold-down"></i> 급여
+                </div>
+                    <div id="nav_menu_4" class="collapse nav_menu__menugroup_sub">
+                        <div class="collapse show nav_menu__menugroup_sub__item" data-toggle="collapse" href="#nav_menu_4_sub_1" role="button" aria-expanded="false"><i class="ni ni-bold-down"></i>정규직</div>
+                            <div id="nav_menu_4_sub_1" class="collapse">
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-money-coins mr-5"></i> 급여대장</div>
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-key-25 mr-5"></i> 사원별급여조회</div>
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-favourite-28 mr-5"></i> 급여현황</div>
+                            </div> 
+                        <div class="collapse show nav_menu__menugroup_sub__item" data-toggle="collapse" href="#nav_menu_4_sub_2" role="button" aria-expanded="false"><i class="ni ni-bold-down"></i>일용직</div>
+                            <div id="nav_menu_4_sub_2" class="collapse">
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-single-02 mr-5"></i> 사원등록</div>
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-money-coins mr-5"></i> 급여대장</div>
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-key-25 mr-5"></i> 사원별급여조회</div>
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-favourite-28 mr-5"></i> 급여현황</div>
+                            </div>     
+                    </div> 
+                <div class="nav_menu__menugroup_main" data-toggle="collapse" href="#nav_menu_5" role="button" aria-expanded="true">
+                    <i class="ni ni-bold-down"></i> 회계
+                </div>
+                    <div id="nav_menu_5" class="collapse {% if nav_main == '회계' %} show {% endif %} nav_menu__menugroup_sub">
+                        <div class="nav_menu__menugroup_sub__item {% if nav_sub_1 == '적격심사견적' %} active {% endif %}" role="button" onclick="location.href='{% url 'accounts:estimate' %}'"><i class="ni ni-like-2"></i> 적격심사견적 </div>
+                        <div class="nav_menu__menugroup_sub__item"><i class="ni ni-support-16 mr-5"></i>거래내역 업로드 </div>
+                        <div class="nav_menu__menugroup_sub__item"><i class="ni ni-sound-wave mr-5"></i>현금흐름도 </div>
+                        <div class="nav_menu__menugroup_sub__item"><i class="ni ni-vector mr-5"></i>월별 예상 </div>
+                        <div class="nav_menu__menugroup_sub__item"><i class="ni ni-trophy mr-5"></i>수입 지출 예상 </div>
+                        <div class="collapse show nav_menu__menugroup_sub__item" data-toggle="collapse" href="#nav_menu_5_sub_1" role="button" aria-expanded="false"><i class="ni ni-bold-down"></i> 결산보고서</div>
+                            <div id="nav_menu_5_sub_1" class="collapse">
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-single-copy-04 mr-5"></i>월별</div>
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-books mr-5"></i>분기별</div>
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-folder-17 mr-5"></i>반기별</div>
+                                <div class="nav_menu__menugroup_sub_sub__item"><i class="ni ni-collection mr-5"></i>연간</div>  
+                             </div> 
+                    </div>
+            </div>
+        </div> <!-- nav_menu -->
+        <!-- nav -->
+
+        <div class="content">
+        {% block content_nav %}
+
+
+        {% endblock %}
+        
+
+        {% block content %}
+
+        {% endblock %}
+
+        </div> <!--contetn -->
+    </div> <!-- main -->
+</body>
+
+{% block endscript %}
+
+{% endblock %}
+
+</html>

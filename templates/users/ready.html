@@ -1,0 +1,143 @@
+
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block script %}
+    <script src="{%static 'js/plugins/datatables.js'%}"></script>
+{% endblock %}
+
+{% block content_nav %}
+    <div class="content_nav">
+        <div class="location" role="button" onclick="location.href='{% url 'users:mypage' %}'">마이페이지 <i class="fas fa-chevron-right"></i> </div>
+        <div class="nav">
+            <div class="nav_item" role="button" onclick="location.href='{% url 'users:mypage' %}'">마이페이지</div>
+            <div class="nav_item" role="button" >메뉴수정</div>
+
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+<div class="content_row">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card card-calendar">
+          <div class="card-body p-3">
+            <div class="d-flex justify-content-between">
+              <div class="col">
+                <h5> 결재 대기</h5>
+              </div>
+            </div>
+            <table class="table table-flush" id="datatable-basic" style="margin-top:-40px;">
+              <thead class="thead-light">
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">상신 날짜</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">상신</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">내용</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">상태</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for acceptor in acceptor_list%}
+                {% if acceptor.priolity == acceptor.result %}
+                {% if acceptor.jarvis_no.category == 5 %}
+                <tr onclick="location.href='{% url 'core:upper_travel_detail' acceptor.jarvis_no.document_5 %}'">
+                {% elif acceptor.jarvis_no.category == 6 %}
+                <tr onclick="location.href='{% url 'core:upper_travel_report_detail' acceptor.jarvis_no.document_5 %}'">
+                {% else %}
+                <tr>
+                {% endif %}
+                  <td class="text-sm font-weight-normal">{{acceptor.updated}}</td>
+                  <td class="text-sm font-weight-normal">
+                    {% if acceptor.jarvis_no.category == 5%}
+                    출장 신청
+                    {% elif acceptor.jarvis_no.category == 6%}
+                    출장 결과 보고서
+                    {% endif %}
+                  </td>
+                  <td class="text-sm font-weight-normal">{{acceptor.jarvis_no.document_title}}</td>
+                  <td class="text-sm font-weight-normal d-flex">
+                      {% if acceptor.result == 0%}
+                      결재 대기
+                      {% endif %}
+                  </td>
+                </tr>
+                {% endif %}
+                  <!-- Modal -->
+                  <div class="modal fade" id="myModal_yes_{{acceptor.pk}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="btn_outline_black" style="width:30px; height:30px; padding-top:4px;" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <h4 class="modal-title" id="myModalLabel">결재 승인</h4>
+                        </div>
+                        <div class="modal-body">
+                            <br> 결재를 <b>승인</b>하시겠습니까?
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn_outline_black" data-dismiss="modal">닫기</button>
+                          <button type="button" class="btn_outline_black" onclick="location.href='{% url 'users:vacation_use_result_yes' acceptor.pk %}'">승인</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="modal fade" id="myModal_no_{{acceptor.pk}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="btn_outline_black" style="width:30px; height:30px; padding-top:4px;" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <h4 class="modal-title" id="myModalLabel">결재 반려</h4>
+                        </div>
+                        <div class="modal-body">
+                            <br> 결재를 <b>반려</b> 하시겠습니까?
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn_outline_black" data-dismiss="modal">닫기</button>
+                          <button type="button" class="btn_outline_black" onclick="location.href='{% url 'users:vacation_use_result_no' acceptor.pk %}'">반려</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  {% block endscript %}
+  <script type="text/javascript">
+    if (document.getElementById('datatable-basic')) {
+      const dataTableSearch = new simpleDatatables.DataTable("#datatable-basic", {
+        searchable: false,
+        fixedHeight: true,
+        paging: false,
+        perPage: 5
+      });
+  
+      document.querySelectorAll(".export").forEach(function(el) {
+        el.addEventListener("click", function(e) {
+          var type = el.dataset.type;
+  
+          var data = {
+            type: type,
+            filename: "soft-ui-" + type,
+          };
+  
+          if (type === "csv") {
+            data.columnDelimiter = "|";
+          }
+  
+          dataTableSearch.export(data);
+        });
+      });
+    };
+  </script>
+  {% endblock %}
+
+
+{% endblock %}

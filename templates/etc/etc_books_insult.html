@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block script %}
+<script src="{%static 'js/plugins/datatables.js'%}"></script>
+{% endblock %}
+
+{% block content_nav %}
+    <div class="content_nav">
+        <div class="location">재고 <i class="fas fa-chevron-right"></i> 기타관리 <i class="fas fa-chevron-right"></i> </div>
+        <div class="nav">
+          <div class="nav_item active" role="button" onclick="location.href='{% url 'etc:etc_books_list' %}'">교재 재고관리</div>
+          <div class="nav_item" role="button" onclick="location.href='{% url 'etc:etc_parking_list' %}'">주차권 관리</div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+<div class="content_row d-flex valign_center">
+  <div class="{% if nav_sub_3 == '교재구매판매' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'etc:etc_books_insult' %}'">+ 구매 / - 판매</div>
+  <div class="{% if nav_sub_3 == '교재재고현황' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:140px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'etc:etc_books_list' %}'">교재재고현황</div>
+</div>
+<div class="content_row_line">
+  &nbsp;
+</div>
+<form id="insult_form">
+  <div class="content_row">
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="type">거래유형</label>
+      </div>
+      <div class="col-md-11">
+        <div class="form-group">
+          <select id="type">
+            <option>구매</option>
+            <option>판매 </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="product_code">물품 코드</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" id="product_code">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="product_name_in">품목명(내부)</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" id="product_name_in">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="product_name_out">품목명(외부)</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" id="product_name_out">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="product_size">규격</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" id="product_size">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="product_box">단위</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" id="product_box">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="product_initial_cnt">초기수량</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" id="product_initial_cnt">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="product_in_price">입고 단가</label>
+      </div>
+      <div class="col-md-9">
+          <input type="text" id="product_in_price">
+      </div>
+      <div class="col-md-1 text-end">
+        <input type="checkbox" value="1" id="product_in_price_vat">
+      </div>
+      <div class="col-md-1 text-start">
+        <label for="product_in_price_vat">VAT 포함</label>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="product_out_price">출고 단가</label>
+      </div>
+      <div class="col-md-9">
+          <input type="text" id="product_out_price">
+      </div>
+      <div class="col-md-1 text-end">
+        <input type="checkbox" value="1" id="product_out_price_vat">
+      </div>
+      <div class="col-md-1 text-start">
+        <label for="product_out_price_vat">VAT 포함</label>
+      </div>
+    </div>
+    <div class="row mb-5">
+      <div class="col-md-1">
+        <label for="product_group">품목그룹</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" id="product_group">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        &nbsp;
+      </div>
+      <div class="col-md-4 text-center">
+        <div class="d-flex" style="justify-content: center;">
+            <div class="btn_outline_black w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;">작성 완료</div>
+            <div class="btn_outline_black w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;">취소</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        &nbsp;
+       </div>
+    </div>
+  </div>
+</form>
+
+{% block endscript %}
+ 
+{% endblock %}
+
+{% endblock %}
+
+

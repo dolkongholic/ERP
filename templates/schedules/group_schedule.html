@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block script %}
+    <script src="{% static 'js/plugins/fullcalendar.min.js'%}"></script>
+{% endblock %}
+
+{% block content_nav %}
+    <div class="content_nav">
+        <div class="location" role="button" onclick="location.href='{% url 'schedules:group_schedule' %}'">일정보기 <i class="fas fa-chevron-right"></i> </div>
+        <div class="nav">
+            <div class="nav_item active" role="button" onclick="location.href='{% url 'schedules:group_schedule' %}'">전체일정</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'schedules:plan_schedule' %}'">예정일정</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'schedules:cancel_schedule' %}'">취소일정</div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+<div class="content_row">
+
+    <div class="card card-calendar">
+        <div class="card-body p-3">
+          <div class="calendar" data-bs-toggle="calendar" id="calendar"></div>
+        </div>
+      </div>
+</div>
+
+{% block endscript %}
+<script type="text/javascript">
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = ("0" + (1 + date.getMonth())).slice(-2);
+    var day = ("0" + date.getDate()).slice(-2);
+
+    var calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
+      contentHeight: 'auto',
+      initialView: "dayGridMonth",
+      headerToolbar: {
+        start: 'title', // will normally be on the left. if RTL, will be on the right
+        center: '',
+        end: 'today prev,next' // will normally be on the right. if RTL, will be on the left
+      },
+      selectable: true,
+      editable: false,
+      initialDate: year + "-" + month + "-" + day,
+      events: [
+      {% for key,value in vacation_list.items %}
+          {
+            title: "연차:{{value.user}}",
+            start: '{{value.start}}',
+            end: '{{value.end}}',
+          },
+          {% endfor %}
+          {% for key,value in travel_list.items %}
+          {
+            title: "[출장] {{value.user}} : {{value.title}}",
+            start: '{{value.start}}',
+            end: '{{value.end}}',
+          },
+          {% endfor %}
+      ],
+      views: {
+        month: {
+          titleFormat: {
+            month: "long",
+            year: "numeric"
+          }
+        },
+        agendaWeek: {
+          titleFormat: {
+            month: "long",
+            year: "numeric",
+            day: "numeric"
+          }
+        },
+        agendaDay: {
+          titleFormat: {
+            month: "short",
+            year: "numeric",
+            day: "numeric"
+          }
+        }
+      },
+    });
+
+    calendar.render();
+  </script>
+{% endblock %}
+        
+{% endblock %}

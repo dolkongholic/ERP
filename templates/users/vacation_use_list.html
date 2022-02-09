@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block script %}
+<script src="{%static 'js/plugins/datatables.js'%}"></script>
+{% endblock %}
+
+{% block content_nav %}
+    <div class="content_nav">
+        <div class="location">인사/근태 <i class="fas fa-chevron-right"></i> 근태 <i class="fas fa-chevron-right"></i> </div>
+        <div class="nav">
+            <div class="nav_item" role="button" onclick="location.href='{% url 'users:vacation_list' %}'">항목관리</div>
+            <div class="nav_item active" role="button" onclick="location.href='{% url 'users:vacation_use_list' %}'">휴가사용실적현황</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'users:vacation_remain' %}'">잔여휴가현황</div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+<div class="content_row d-flex valign_center">
+  <div class="{% if nav_sub_3 == '휴가사용' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'users:vacation_use_insult' %}'">+ 휴가 추가</div>
+  <div class="{% if nav_sub_3 == '휴가사용실적리스트' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:140px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'users:vacation_use_list' %}'">휴가사용실적현황</div>
+</div>
+<div class="content_row_line">
+  &nbsp;
+</div>
+<div class="content_row">
+  <form id="login_form">
+    <table class="table table-flush" id="datatable-basic">
+      <thead class="thead-light">
+        <tr>
+          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">종류</th>
+          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">시작일</th>
+          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">종료일</th>
+          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">내용</th>
+          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+          <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for vacation in vacation_list %}
+        <tr>
+          <td class="text-sm font-weight-normal">{{vacation.type}}</td>
+          <td class="text-sm font-weight-normal">{{vacation.start_date}} ({%if vacation.start_date_afternoon and vacation.start_date_morning%}오전,오후{% elif vacation.start_date_afternoon %}오후{% elif vacation.start_date_morning %}오전{% endif %})</td>
+          <td class="text-sm font-weight-normal">{{vacation.end_date}} ({%if vacation.end_date_afternoon and vacation.end_date_morning%}오전,오후{% elif vacation.end_date_afternoon %}오후{% elif vacation.end_date_morning %}오전{% endif %})</td>
+          <td class="text-sm font-weight-normal">{{vacation.comment}}</td>
+          <td class="text-sm font-weight-normal">{% if vacation.accepter_1_result == 2 and vacation.accepter_2_result == 2 %}반려{% elif vacation.accepter_1_result == 1 and vacation.accepter_2_result == 1%}결재완료{%else%}결재 진행중{%endif%}</td>
+          <td class="text-sm font-weight-normal d-flex">
+            {% if vacation.accepter_1_result == 2 and vacation.accepter_2_result == 2 %}
+            <div role="button" class="btn_outline_black" style="width:50px; height:30px; padding-top:4px; margin-right:10px;" data-toggle="modal" data-target="#myModal_re_{{vacation.pk}}">
+              재상신
+            </div>
+            <div role="button" class="btn_outline_black" style="width:50px; height:30px; padding-top:4px; margin-right:10px;" data-toggle="modal" data-target="#myModal_del_{{vacation.pk}}">
+              삭제
+            </div>
+            {% elif vacation.accepter_1_result == 1 and vacation.accepter_2_result == 1 %}
+            <div class="btn_outline_black" style="width:50px; height:30px; padding-top:4px; margin-right:10px;background: rgba(0,0,0,0.3); border:1px solid rgba(0,0,0,0.3);">
+                재상신
+            </div>
+            {% else %}
+            <div class="btn_outline_black" style="width:50px; height:30px; padding-top:4px; margin-right:10px;background: rgba(0,0,0,0.3); border:1px solid rgba(0,0,0,0.3);">
+              진행중
+            </div>
+            {% endif %}
+          </td>
+        </tr>
+<!-- Modal -->
+<div class="modal fade" id="myModal_re_{{vacation.pk}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn_outline_black" style="width:30px; height:30px; padding-top:4px;" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">재상신 </h4>
+      </div>
+      <div class="modal-body">
+          <b>{{vacation.user.username}} {{vacation.user.level}}의</b><br> <b>{{vacation.start_date}} ~ {{vacation.end_date}}</b>까지<br> <b>{{vacation.comment}}</b> 의 이유로 <br> 연차/휴가 결재를 상신 하였습니다.
+          <br> 결재를 <b>재상신</b>하시겠습니까?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn_outline_black" data-dismiss="modal">닫기</button>
+        <button type="button" class="btn_outline_black" onclick="location.href='{% url 'users:vacation_use_result_re' vacation.pk %}'">재상신</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="myModal_del_{{vacation.pk}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn_outline_black" style="width:30px; height:30px; padding-top:4px;" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">삭제</h4>
+      </div>
+      <div class="modal-body">
+          <b>{{vacation.user.username}} {{vacation.user.level}}의</b><br> <b>{{vacation.start_date}} ~ {{vacation.end_date}}</b>까지<br> <b>{{vacation.comment}}</b> 의 이유로 <br> 연차/휴가 결재를 상신 하였습니다.
+          <br> 결재를 <b>삭제</b> 하시겠습니까?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn_outline_black" data-dismiss="modal">닫기</button>
+        <button type="button" class="btn_outline_black" onclick="location.href='{% url 'users:vacation_use_result_del' vacation.pk %}'">삭제</button>
+      </div>
+    </div>
+  </div>
+</div>
+        {% endfor %}
+      </tbody>
+    </table>
+  </form>
+</div>
+
+{% block endscript %}
+  <script type="text/javascript">
+    if (document.getElementById('datatable-basic')) {
+      const dataTableSearch = new simpleDatatables.DataTable("#datatable-basic", {
+        searchable: true,
+        fixedHeight: false,
+        perPage: 7
+      });
+
+      document.querySelectorAll(".export").forEach(function(el) {
+        el.addEventListener("click", function(e) {
+          var type = el.dataset.type;
+
+          var data = {
+            type: type,
+            filename: "soft-ui-" + type,
+          };
+
+          if (type === "csv") {
+            data.columnDelimiter = "|";
+          }
+
+          dataTableSearch.export(data);
+        });
+      });
+    };
+  </script>
+{% endblock %}
+
+{% endblock %}
+
+

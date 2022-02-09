@@ -1,0 +1,422 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block script %}
+<script src="{%static 'js/plugins/datatables.js'%}"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script src="//d1p7wdleee1q2z.cloudfront.net/post/search.min.js"></script>
+<script type="text/javascript">
+$(function() { $("#address_1_search").postcodifyPopUp(
+  {
+    insertAddress : "#address_1",
+    insertBuildingName : "#location_1",
+    insertDetails: "#address_1",
+  }
+); }); 
+$(function() { $("#address_2_search").postcodifyPopUp(
+  {
+    insertAddress : "#address_2",
+    insertBuildingName : "#location_2",
+    insertDetails: "#address_2",
+  }
+); }); 
+$(function() { $("#address_3_search").postcodifyPopUp(
+  {
+    insertAddress : "#address_3",
+    insertBuildingName : "#location_3",
+    insertDetails: "#address_3",
+  }
+); }); 
+$(function() { $("#address_4_search").postcodifyPopUp(
+  {
+    insertAddress : "#address_4",
+    insertBuildingName : "#location_4",
+    insertDetails: "#address_4",
+  }
+); }); 
+$(function() { $("#address_5_search").postcodifyPopUp(
+  {
+    insertAddress : "#address_5",
+    insertBuildingName : "#location_5",
+    insertDetails: "#address_5",
+  }
+); }); 
+
+  var rowIndex = 1
+  function hideRow(arg)  {
+    rowIndex--;
+    console.log(rowIndex);
+    const row = document.getElementById('location_div_'+arg);
+    row.style.display = 'none';
+    const address = document.getElementById('address_'+arg);
+    address.value = "";
+    const location = document.getElementById('location_'+arg);
+    location.value = "";
+    const km = document.getElementById('km_'+arg);
+    km.value = "";
+  }
+
+  function showRow()  {   
+    if (rowIndex > 4){ 
+      console.log(rowIndex);
+      alert("최대 5개까지만 추가가 가능합니다.")
+    } else {
+      rowIndex++;
+      console.log(rowIndex);
+      const row = document.getElementById('location_div_'+rowIndex);
+      row.style.display = '';
+   }
+  }
+
+  function setChildValue_1(address,location,km){
+    document.getElementById("address_1").value = address;
+    document.getElementById("location_1").value = location;
+    document.getElementById("km_1").value = km;
+  }
+  function setChildValue_2(address,location,km){
+    document.getElementById("address_2").value = address;
+    document.getElementById("location_2").value = location;
+    document.getElementById("km_2").value = km;
+  }
+  function setChildValue_3(address,location,km){
+    document.getElementById("address_3").value = address;
+    document.getElementById("location_3").value = location;
+    document.getElementById("km_3").value = km;
+  }
+  function setChildValue_4(address,location,km){
+    document.getElementById("address_4").value = address;
+    document.getElementById("location_4").value = location;
+    document.getElementById("km_4").value = km;
+  }
+  function setChildValue_5(address,location,km){
+    document.getElementById("address_5").value = address;
+    document.getElementById("location_5").value = location;
+    document.getElementById("km_5").value = km;
+  }
+
+  var popupX = (window.screen.width / 2) - (popupWidth / 2); //&nbsp;만들 팝업창 좌우 크기의 1/2 만큼 보정값으로 빼주었음
+  var popupY= (window.screen.height / 2) - (popupHeight / 2); //&nbsp;만들 팝업창 상하 크기의 1/2 만큼 보정값으로 빼주었음
+  function showPopup_1() { window.open("{% url 'groupware:upper_travel_favo_popup_1' %}", "showPopup_1",'status=no, height=400, width=600, left='+ popupX + ', top='+ popupY); }
+  function showPopup_2() { window.open("{% url 'groupware:upper_travel_favo_popup_2' %}", "showPopup_1",'status=no, height=400, width=600, left='+ popupX + ', top='+ popupY); }
+  function showPopup_3() { window.open("{% url 'groupware:upper_travel_favo_popup_3' %}", "showPopup_1",'status=no, height=400, width=600, left='+ popupX + ', top='+ popupY); }
+  function showPopup_4() { window.open("{% url 'groupware:upper_travel_favo_popup_4' %}", "showPopup_1",'status=no, height=400, width=600, left='+ popupX + ', top='+ popupY); }
+  function showPopup_5() { window.open("{% url 'groupware:upper_travel_favo_popup_5' %}", "showPopup_1",'status=no, height=400, width=600, left='+ popupX + ', top='+ popupY); }
+  </script>
+{% endblock %}
+
+{% block content_nav %}
+    <div class="content_nav">
+        <div class="location">그룹웨어 <i class="fas fa-chevron-right"></i> 전자결재 <i class="fas fa-chevron-right"></i> </div>
+        <div class="nav">
+            <div class="nav_item active" role="button" onclick="location.href='{% url 'groupware:upper_travel_list' %}'">출장여비</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'groupware:upper_buy_list' %}'">품의서</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'groupware:upper_pay_list' %}'">지출결의서</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'groupware:upper_free_list' %}'">자유양식</div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+<div class="content_row d-flex valign_center">
+  <div class="{% if nav_sub_3 == '출장여비작성' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'groupware:upper_travel_insult' %}'">+ 출장여비 작성</div>
+  <div class="{% if nav_sub_3 == '출장보고서작성' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'groupware:upper_travel_report' %}'">+ 출장보고서작성</div>
+  <div class="{% if nav_sub_3 == '출장여비리스트' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:100px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'groupware:upper_travel_list' %}'">출장여비 목록</div>
+</div>
+<div class="content_row_line">
+  &nbsp;
+</div>
+<form method="POST" enctype="multipart/form-data" id="insert_form" autocomplete="off" >
+  {% csrf_token %}
+  <div class="content_row">
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="team_code">소속</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" id="team_code" name="team_code" value="{{user.team_code}}" disabled>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="level">직위</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" id="level" name="level" value="{{user.level}}" disabled>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="username">성명</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" id="username" name="username" value="{{user.username}}" disabled>
+        <input type="hidden" id="user" name="user" value="{{user.pk}}">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="type">출장구분</label>
+      </div>
+      <div class="col-md-11">
+        <select name="type" id="type">
+          <option value="외출">외출</option>
+          <option value="단기출장" selected>단기출장(8시간 이상~7일 이내)</option>
+          <option value="장기출장">장기출장(7일 이상)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="acceptor_1">결제자</label>
+      </div>
+      <div class="col-md-11">
+        <select id="acceptor_1" name="acceptor_1">
+          {% for user in user_list %}
+            {% if user.staff_level == 0 %}
+              <option value="{{user.pk}}">{{user.username}} {{user.level}}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+        <select id="acceptor_2" name="acceptor_2">
+          {% for user in user_list %}
+            {% if user.staff_level == 3 %}
+              <option value="{{user.pk}}">{{user.username}} {{user.level}}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+        <select id="acceptor_3" name="acceptor_3">
+          <option selected>팀장 승인</option>
+          {% for user in user_list %}
+            {% if user.staff_level == 1 %}
+              <option value="{{user.pk}}">{{user.username}} {{user.level}}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="start_date">출장시작일</label>
+      </div>
+      <div class="col-md-11">
+        <input type="datetime-local" id="start_date" name="start_date">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="end_date">출장종료일</label>
+      </div>
+      <div class="col-md-11">
+        <input type="datetime-local" id="end_date" name="end_date">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="location">출장지 1</label>
+      </div>
+      <div class="col-md-2">
+          <input type="text" id="location_1" name="location_1">
+      </div>
+      <div class="col-md-1">
+        <label for="address" id="address_1_search">주소 1 (검색)</label>
+      </div>
+      <div class="col-md-3">
+          <input type="text" id="address_1" name="address_1">
+      </div>
+      <div class="col-md-1">
+        <label for="km_1" id="address_1_search">거리(Km)</label>
+      </div>
+      <div class="col-md-1">
+        <input type="text" id="km_1" name="km_1">
+      </div>
+      <div class="col-md-1" style="display: flex;">
+        <label for="reback_1" style="width:50%">왕복</label> <input type="checkbox" id="reback_1" name="reback_1">
+      </div>
+      <div class="col-md-1">
+        <div role="button" onclick="showRow()" class="btn_outline_black" style="width:70px; padding:2px;">추가</div>
+      </div>
+      <div class="col-md-1">
+        <label id="favor_1" onclick="showPopup_1();">즐겨찾기</label>
+      </div>
+    </div>    
+    <div class="row mb-3" id="location_div_2" style="display: none;">
+      <div class="col-md-1">
+        <label for="location_2">출장지 2</label>
+      </div>
+      <div class="col-md-2">
+          <input type="text" id="location_2" name="location_2">
+      </div>
+      <div class="col-md-1">
+        <label for="address" id="address_2_search">주소 2 (검색)</label>
+      </div>
+      <div class="col-md-3">
+          <input type="text" id="address_2" name="address_2">
+      </div>
+      <div class="col-md-1">
+        <label for="km_2" id="address_2_search">거리(Km)</label>
+      </div>
+      <div class="col-md-1">
+          <input type="text" id="km_2" name="km_2">
+      </div>
+      <div class="col-md-1" style="display: flex;">
+        <label for="reback_2" style="width:50%">왕복</label> <input type="checkbox" id="reback_2" name="reback_2">
+      </div>
+      <div class="col-md-1">
+        <div role="button" onclick='hideRow(2)' class="btn_outline_black" style="width:70px; padding:2px;">삭제</div>
+      </div>
+      <div class="col-md-1">
+        <label id="favor_2" onclick="showPopup_2();">즐겨찾기</label>
+      </div>
+    </div>  
+    <div class="row mb-3" id="location_div_3" style="display: none;">
+      <div class="col-md-1">
+        <label for="location_3">출장지 3</label>
+      </div>
+      <div class="col-md-2">
+          <input type="text" id="location_3" name="location_3">
+      </div>
+      <div class="col-md-1">
+        <label for="address" id="address_3_search">주소 3 (검색)</label>
+      </div>
+      <div class="col-md-3">
+          <input type="text" id="address_3" name="address_3">
+      </div>
+      <div class="col-md-1">
+        <label for="km_3" id="address_3_search">거리(Km)</label>
+      </div>
+      <div class="col-md-1">
+        <input type="text" id="km_3" name="km_3">
+      </div>
+      <div class="col-md-1" style="display: flex;">
+        <label for="reback_3" style="width:50%">왕복</label> <input type="checkbox" id="reback_3" name="reback_3">
+      </div>
+      <div class="col-md-1">
+        <div role="button" onclick='hideRow(3)' class="btn_outline_black" style="width:70px; padding:2px;">삭제</div>
+      </div>
+      <div class="col-md-1">
+        <label id="favor_3" onclick="showPopup_3();">즐겨찾기</label>
+      </div>
+    </div>
+    <div class="row mb-3" id="location_div_4" style="display: none;">
+      <div class="col-md-1">
+        <label for="location_4">출장지 4</label>
+      </div>
+      <div class="col-md-2">
+          <input type="text" id="location_4" name="location_4">
+      </div>
+      <div class="col-md-1">
+        <label for="address" id="address_4_search">주소 4 (검색)</label>
+      </div>
+      <div class="col-md-3">
+          <input type="text" id="address_4" name="address_4">
+      </div>
+      <div class="col-md-1">
+        <label for="km_4" id="address_4_search">거리(Km)</label>
+      </div>
+      <div class="col-md-1">
+          <input type="text" id="km_4" name="km_4">
+      </div>
+      <div class="col-md-1" style="display: flex;">
+        <label for="reback_4" style="width:50%">왕복</label> <input type="checkbox" id="reback_4" name="reback_4">
+      </div>
+      <div class="col-md-1">
+        <div role="button" onclick='hideRow(4)' class="btn_outline_black" style="width:70px; padding:2px;">삭제</div>
+      </div>
+      <div class="col-md-1">
+        <label id="favor_4" onclick="showPopup_4();">즐겨찾기</label>
+      </div>
+    </div>
+    <div class="row mb-3" id="location_div_5" style="display: none;">
+      <div class="col-md-1">
+        <label for="location_5">출장지 5</label>
+      </div>
+      <div class="col-md-2">
+          <input type="text" id="location_5" name="location_5">
+      </div>
+      <div class="col-md-1">
+        <label for="address" id="address_5_search">주소 5 (검색)</label>
+      </div>
+      <div class="col-md-3">
+          <input type="text" id="address_5" name="address_5">
+      </div>
+      <div class="col-md-1">
+        <label for="km_5" id="address_5_search">거리(Km)</label>
+      </div>
+      <div class="col-md-1">
+          <input type="text" id="km_5" name="km_5">
+      </div>
+      <div class="col-md-1" style="display: flex;">
+        <label for="reback_5" style="width:50%">왕복</label> <input type="checkbox" id="reback_5" name="reback_5">
+      </div>
+      <div class="col-md-1">
+        <div role="button" onclick='hideRow(5)' class="btn_outline_black" style="width:70px; padding:2px;">삭제</div>
+      </div>
+      <div class="col-md-1">
+        <label id="favor_5" onclick="showPopup_5();">즐겨찾기</label>
+      </div>
+    </div>    
+
+  
+
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="why">방문목적</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" id="why" name="why">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="witness">동도 출장자</label>
+      </div>
+      <div class="col-md-11">
+        <select id="witness" name="witness">
+          {% for user in user_list%}
+            <option value="{{user.username}}">{{user.username}}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="eatandother_pay">기타 지출 예상 금액</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" id="eatandother_pay" name="eatandother_pay">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="eatandother_comment">기타 지출 발생 사유</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" id="eatandother_comment" name="eatandother_comment">
+      </div>
+    </div>   
+    <div class="row mt-5">
+      <div class="col-md-4">
+        &nbsp;
+      </div>
+      <div class="col-md-4 text-center">
+        <div class="d-flex" style="justify-content: center;">
+          <div role="button" class="btn_outline_black_active" onclick="document.getElementById('insert_form').submit(); this.onclick=null;">결제 상신</div>
+          <div class="btn_outline_black w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px; margin-left:10px;">취소</div>
+        </div>
+      </div>
+      <div class="col-md-4" style="margin-bottom:100px;">
+        &nbsp;
+       </div>
+    </div>
+  </div>
+</form>
+
+{% block endscript %}
+
+{% endblock %}
+
+{% endblock %}
+
+

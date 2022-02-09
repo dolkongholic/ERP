@@ -1,0 +1,428 @@
+{% extends "base.html" %}
+{% load static i18n %}
+{% block css %}
+<style>
+  table, td, th {
+    border: 1px solid rgba(0,0,0,0.1);
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .filebox label { 
+    font-size: inherit; 
+    cursor: pointer; 
+  } 
+.filebox input[type="file"] {
+  /* 파일 필드 숨기기 */ 
+  position: absolute; 
+  width: 1px; 
+  height: 1px; 
+  padding: 0; 
+  margin: -1px; 
+  overflow: hidden; 
+  clip:rect(0,0,0,0); 
+  border: 0; 
+}
+
+</style>
+{% endblock%}
+{% block script %}
+<script src="{%static 'js/plugins/datatables.js'%}"></script>
+{% endblock %}
+
+{% block content_nav %}
+    <div class="content_nav">
+        <div class="location">그룹웨어 <i class="fas fa-chevron-right"></i> 전자결재 <i class="fas fa-chevron-right"></i> </div>
+        <div class="nav">
+            <div class="nav_item active" role="button" onclick="location.href='{% url 'groupware:upper_travel_list' %}'">출장여비</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'groupware:upper_buy_list' %}'">품의서</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'groupware:upper_pay_list' %}'">지출결의서</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'groupware:upper_free_list' %}'">자유양식</div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+<div class="content_row d-flex valign_center">
+  <div class="{% if nav_sub_3 == '출장여비작성' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'groupware:upper_travel_insult' %}'">+ 출장여비 작성</div>
+  <div class="{% if nav_sub_3 == '출장보고서작성' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'groupware:upper_travel_report' %}'">+ 출장보고서작성</div>
+  <div class="{% if nav_sub_3 == '출장여비리스트' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:100px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'groupware:upper_travel_list' %}'">출장여비 목록</div>
+</div>
+<div class="content_row_line">
+  &nbsp;
+</div>
+<form method="POST" enctype="multipart/form-data" id="insert_form" autocomplete="off" >
+  {% csrf_token %}
+  {% for travel in travel_list %}
+  <input type="hidden" name="travel" value="{{travel.pk}}" />
+  <div class="row m-5 p-2">
+    <table>
+      <tr>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">소속</td>
+        <td width="15%" align="center">{{travel.user.team_code}}</td>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1);">직위</td>
+        <td width="15%" align="center">{{travel.user.level}}</td>
+        <td width="15%" align="center" style="background-color: rgba(0,0,0,0.1);">성명</td>
+        <td width="15%" align="center">{{travel.user.username}}</td>
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1);">출장구분</td>
+        <td align="center" colspan="4">
+          <div style="display:flex;justify-content:space-around;padding: 10px;">
+            <span>
+            {% if travel.type == "외출" %}
+            ▣
+            {% else %}
+            □
+            {% endif %}
+            외출(8시간 이내)
+            </span>
+            <span>
+            {% if travel.type == "단기출장"%}
+            ▣
+            {% else %}
+            □
+            {% endif %}
+            단기출장(8시간 이상 ~ 7일이내)
+            </span>
+            <span>
+            {% if travel.type == "장기출장"%}
+            ▣
+            {% else %}
+            □
+            {% endif %}
+            장기출장(7일이상)
+            </span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1);">출장기간</td>
+        <td align="left" colspan="4" style="padding:10px;">{{travel.start_date}} 부터 ~ {{travel.end_date}} 까지</td>
+        {% if span_day == 0 %}
+        <td align="center">&nbsp;</td>
+        {% else %}
+        <td align="center">({{span_day}} 박 {{span_day|add:1}}일)</td>
+        {% endif %}
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">출장지</td>
+        <td align="left" colspan="5" style="padding:10px;">
+          {% if travel.location_1 != "" %}
+          {{travel.location_1}}
+          {% endif %}
+          {% if travel.location_2 != None %}
+          , {{travel.location_2}}
+          {% endif %}
+          {% if travel.location_3 != None %}
+          , {{travel.location_3}}
+          {% endif %}
+          {% if travel.location_4 != None %}
+          , {{travel.location_4}}
+          {% endif %}
+          {% if travel.location_5 != None %}
+          , {{travel.location_5}}
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">주소</td>
+        <td align="left" colspan="5" style="padding:10px;">{{travel.address_1}}</td>
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">목적</td>
+        <td align="left" colspan="5" style="padding:10px;">{{travel.why}}</td>
+      </tr>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">동도출장자</td>
+        <td align="left" colspan="5" style="padding:10px;">{{travel.witness}}</td>
+      </tr>
+    </table>
+    <br>
+    1.차량 운행 기록
+    <table>
+      <tr>
+        <td width="10%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">등록</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">일자</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">내용</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">출발지</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">도착지</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">운행거리</td>
+        <td width="14%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">총운행거리</td>
+        <td width="6%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">왕복</td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="traffic_1_img">영수증등록</label> <input type="file" id="traffic_1_img" name="traffic_1_img"> </div>
+        <td width="14%" align="center"><input type="date" name="traffic_1_date" placeholder="예)2021-10-27" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_1_comment" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_1_start" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_1_end" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_1_length" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_1_total_length" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="6%" align="center"><input type="checkbox" name="traffic_1_oneway" placeholder="" style="height:10px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="traffic_2_img">영수증등록</label> <input type="file" id="traffic_2_img" name="traffic_2_img"> </div>
+        <td width="14%" align="center"><input type="date" name="traffic_2_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_2_comment" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_2_start" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_2_end" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_2_length" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_2_total_length" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="6%" align="center"><input type="checkbox" name="traffic_2_oneway" placeholder="" style="height:10px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="traffic_3_img">영수증등록</label> <input type="file" id="traffic_3_img" name="traffic_3_img"> </div>
+        <td width="14%" align="center"><input type="date" name="traffic_3_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_3_comment" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_3_start" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_3_end" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_3_length" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_3_total_length" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="6%" align="center"><input type="checkbox" name="traffic_3_oneway" placeholder="" style="height:10px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="traffic_4_img">영수증등록</label> <input type="file" id="traffic_4_img" name="traffic_4_img"> </div>
+        <td width="14%" align="center"><input type="date" name="traffic_4_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_4_comment" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_4_start" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_4_end" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_4_length" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_4_total_length" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="6%" align="center"><input type="checkbox" name="traffic_4_oneway" placeholder="" style="height:10px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="traffic_5_img">영수증등록</label> <input type="file" id="traffic_5_img" name="traffic_5_img"> </div>
+        <td width="14%" align="center"><input type="date" name="traffic_5_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_5_comment" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_5_start" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_5_end" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_5_length" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_5_total_length" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="6%" align="center"><input type="checkbox" name="traffic_5_oneway" placeholder="" style="height:10px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="traffic_6_img">영수증등록</label> <input type="file" id="traffic_6_img" name="traffic_6_img"> </div>
+        <td width="14%" align="center"><input type="date" name="traffic_6_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_6_comment" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_6_start" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_6_end" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_6_length" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="14%" align="center"><input type="text" name="traffic_6_total_length" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="6%" align="center"><input type="checkbox" name="traffic_6_oneway" placeholder="" style="height:10px; padding:10px;"></td>
+      </tr>
+    </table>
+    2-1.통행료 영수증
+    <table>
+      <tr>
+        <td width="10%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">등록</td>
+        <td width="23%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">일자</td>
+        <td width="23%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">출발지</td>
+        <td width="23%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">도착지</td>
+        <td width="23%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">금액</td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="hipass_1_img">영수증등록</label> <input type="file" id="hipass_1_img" name="hipass_1_img"> </div>
+        <td width="23%" align="center"><input type="date" name="hipass_1_date" placeholder="예)2021-10-27" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_1_start" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_1_end" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_1_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="hipass_2_img">영수증등록</label> <input type="file" id="hipass_2_img" name="hipass_2_img"> </div>
+        <td width="23%" align="center"><input type="date" name="hipass_2_date" placeholder="예)2021-10-27" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_2_start" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_2_end" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_2_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="hipass_3_img">영수증등록</label> <input type="file" id="hipass_3_img" name="hipass_3_img"> </div>
+        <td width="23%" align="center"><input type="date" name="hipass_3_date" placeholder="예)2021-10-27" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_3_start" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_3_end" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_3_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="hipass_4_img">영수증등록</label> <input type="file" id="hipass_4_img" name="hipass_4_img"> </div>
+        <td width="23%" align="center"><input type="date" name="hipass_4_date" placeholder="예)2021-10-27" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_4_start" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_4_end" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_4_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="hipass_5_img">영수증등록</label> <input type="file" id="hipass_5_img" name="hipass_5_img"> </div>
+        <td width="23%" align="center"><input type="date" name="hipass_5_date" placeholder="예)2021-10-27" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_5_start" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_5_end" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_5_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="hipass_6_img">영수증등록</label> <input type="file" id="hipass_6_img" name="hipass_6_img"> </div>
+        <td width="23%" align="center"><input type="date" name="hipass_6_date" placeholder="예)2021-10-27" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_6_start" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_6_end" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="23%" align="center"><input type="text" name="hipass_6_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+    </table>
+    <br>
+    3.숙박비 영수증
+    <table>
+      <tr>
+        <td width="10%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">등록</td>
+        <td width="30%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">일자</td>
+        <td width="30%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">금액</td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="sleep_1_img">영수증등록</label> <input type="file" id="sleep_1_img" name="sleep_1_img"> </div>
+        <td width="30%" align="center"><input type="date" name="sleep_1_date" placeholder="예)2021-10-27" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="sleep_1_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="sleep_2_img">영수증등록</label> <input type="file" id="sleep_2_img" name="sleep_2_img"> </div>
+        <td width="30%" align="center"><input type="date" name="sleep_2_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="sleep_2_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="sleep_3_img">영수증등록</label> <input type="file" id="sleep_3_img" name="sleep_3_img"> </div>
+        <td width="30%" align="center"><input type="date" name="sleep_3_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="sleep_3_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="sleep_4_img">영수증등록</label> <input type="file" id="sleep_4_img" name="sleep_4_img"> </div>
+        <td width="30%" align="center"><input type="date" name="sleep_4_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="sleep_4_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="sleep_5_img">영수증등록</label> <input type="file" id="sleep_5_img" name="sleep_5_img"> </div>
+        <td width="30%" align="center"><input type="date" name="sleep_5_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="sleep_5_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="sleep_6_img">영수증등록</label> <input type="file" id="sleep_6_img" name="sleep_6_img"> </div>
+        <td width="30%" align="center"><input type="date" name="sleep_6_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="sleep_6_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+    </table>
+    <br>
+    4.식대비 영수증
+    <table>
+      <tr>
+        <td width="10%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">등록</td>
+        <td width="30%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">일자</td>
+        <td width="30%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">금액</td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="food_1_img">영수증등록</label> <input type="file" id="food_1_img" name="food_1_img"> </div>
+        <td width="30%" align="center"><input type="date" name="food_1_date" placeholder="예)2021-10-27" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="food_1_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="food_2_img">영수증등록</label> <input type="file" id="food_2_img" name="food_2_img"> </div>
+        <td width="30%" align="center"><input type="date" name="food_2_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="food_2_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="food_3_img">영수증등록</label> <input type="file" id="food_3_img" name="food_3_img"> </div>
+        <td width="30%" align="center"><input type="date" name="food_3_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="food_3_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="food_4_img">영수증등록</label> <input type="file" id="food_4_img" name="food_4_img"> </div>
+        <td width="30%" align="center"><input type="date" name="food_4_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="food_4_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="food_5_img">영수증등록</label> <input type="file" id="food_5_img" name="food_5_img"> </div>
+        <td width="30%" align="center"><input type="date" name="food_5_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="food_5_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="food_6_img">영수증등록</label> <input type="file" id="food_6_img" name="food_6_img"> </div>
+        <td width="30%" align="center"><input type="date" name="food_6_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="food_6_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+    </table>
+    <br>
+    5.기타 여비 영수증
+    <table>
+      <tr>
+        <td width="10%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">등록</td>
+        <td width="30%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">일자</td>
+        <td width="30%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">내용</td>
+        <td width="30%" align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">금액</td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="other_1_img">영수증등록</label> <input type="file" id="other_1_img" name="other_1_img"> </div>
+        <td width="30%" align="center"><input type="date" name="other_1_date" placeholder="예)2021-10-27" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="other_1_comment" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="other_1_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="other_2_img">영수증등록</label> <input type="file" id="other_2_img" name="other_2_img"> </div>
+        <td width="30%" align="center"><input type="date" name="other_2_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="other_2_comment" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="other_2_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="other_3_img">영수증등록</label> <input type="file" id="other_3_img" name="other_3_img"> </div>
+        <td width="30%" align="center"><input type="date" name="other_3_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="other_3_comment" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="other_3_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="other_4_img">영수증등록</label> <input type="file" id="other_4_img" name="other_4_img"> </div>
+        <td width="30%" align="center"><input type="date" name="other_4_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="other_4_comment" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="other_4_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="other_5_img">영수증등록</label> <input type="file" id="other_5_img" name="other_5_img"> </div>
+        <td width="30%" align="center"><input type="date" name="other_5_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="other_5_comment" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="other_5_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+      <tr>
+        <td width="10%" align="center"><div class="filebox"> <label for="other_6_img">영수증등록</label> <input type="file" id="other_6_img" name="other_6_img"> </div>
+        <td width="30%" align="center"><input type="date" name="other_6_date" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="other_6_comment" placeholder="" style="height:46px; padding:10px;"></td>
+        <td width="30%" align="center"><input type="text" name="other_6_pay" placeholder="" style="height:46px; padding:10px;"></td>
+      </tr>
+    </table>
+    5.출장 보고서
+    <table>
+      <tr>
+        <td align="center" style="background-color: rgba(0,0,0,0.1); padding:10px;">출장 보고서</td>
+      </tr>
+      <tr>
+        <td><textarea name="comment" style="width:100%; height:200px;"></textarea></td>
+      </tr>
+    </table>
+  </div>
+    {% endfor %}
+    <div class="row mt-5">
+      <div class="col-md-4">
+        &nbsp;
+      </div>
+      <div class="col-md-4 text-center">
+        <div class="d-flex" style="justify-content: center;">
+          <div role="button" class="btn_outline_black_active" onclick="document.getElementById('insert_form').submit(); this.onclick=null;">결제 상신</div>
+          <div class="btn_outline_black w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px; margin-left:10px;">취소</div>
+        </div>
+      </div>
+      <div class="col-md-4" style="margin-bottom:100px;">
+        &nbsp;
+       </div>
+    </div>
+  </div>
+</form>
+
+{% block endscript %}
+
+{% endblock %}
+
+{% endblock %}
+
+

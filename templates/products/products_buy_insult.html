@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block script %}
+<script src="{%static 'js/plugins/datatables.js'%}"></script>
+{% endblock %}
+
+{% block content_nav %}
+    <div class="content_nav">
+        <div class="location">재고 <i class="fas fa-chevron-right"></i> 자재관리 <i class="fas fa-chevron-right"></i> </div>
+        <div class="nav">
+            <div class="nav_item" role="button" onclick="location.href='{% url 'products:products_now_list' %}'">재고현황</div>
+            <div class="nav_item active" role="button" onclick="location.href='{% url 'products:products_buy_list' %}'">발주서</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'products:products_plan_list' %}'">견적서</div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+<div class="content_row d-flex valign_center">
+  <div class="{% if nav_sub_3 == '발주서작성' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'products:products_buy_insult' %}'">+ 발주서 작성</div>
+  <div class="{% if nav_sub_3 == '발주서현황' %} btn_outline_black_active {% else %} btn_outline_black {% endif %} w_50" role="button" style="width:100px; border-radius: 4px; margin-right:10px;" onclick="location.href='{% url 'products:products_buy_list' %}'">발주서 현황</div>
+</div>
+<div class="content_row_line">
+  &nbsp;
+</div>
+<form id="insult_form">
+  <div class="content_row">
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="date">일자</label>
+      </div>
+      <div class="col-md-11">
+        <input type="date" id="date">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="companies_name">거래처</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" id="companies_name">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="companies_contact_person">담당자</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" id="companies_contact_person">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="money_type">통화</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" id="money_type">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="memo">참조</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" id="memo">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="pay_option">결제조건</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" id="pay_option">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="valiable_date">유효기간</label>
+      </div>
+      <div class="col-md-11">
+        <input type="date" id="valiable_date">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="come_date">납기일자</label>
+      </div>
+      <div class="col-md-11">
+        <input type="date" id="come_date">
+      </div>
+    </div>
+    <div class="row mt-5 mb-3">
+      <div class="col-sm-2">
+        품목코드
+      </div>
+      <div class="col-sm-2">
+        품목명
+      </div>
+      <div class="col-sm-1">
+        규격
+      </div>
+      <div class="col-sm-1">
+        수량
+      </div>
+      <div class="col-sm-2">
+        단가
+      </div>
+      <div class="col-sm-2">
+        공급가액
+      </div>
+      <div class="col-sm-2">
+        부가세
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-sm-2">
+        <input type="text" id="item_1_code">
+      </div>
+      <div class="col-sm-2">
+        <input type="text" id="item_1_name">
+      </div>
+      <div class="col-sm-1">
+        <input type="text" id="item_1_size">
+      </div>
+      <div class="col-sm-1">
+        <input type="text" id="item_1_cnt">
+      </div>
+      <div class="col-sm-2">
+        <input type="text" id="item_1_price">
+      </div>
+      <div class="col-sm-2">
+        <input type="text" id="item_1_in_price">
+      </div>
+      <div class="col-sm-2">
+        <input type="text" id="item_1_vat">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-sm-2">
+        <input type="text" id="item_2_code">
+      </div>
+      <div class="col-sm-2">
+        <input type="text" id="item_2_name">
+      </div>
+      <div class="col-sm-1">
+        <input type="text" id="item_2_size">
+      </div>
+      <div class="col-sm-1">
+        <input type="text" id="item_2_cnt">
+      </div>
+      <div class="col-sm-2">
+        <input type="text" id="item_2_price">
+      </div>
+      <div class="col-sm-2">
+        <input type="text" id="item_2_in_price">
+      </div>
+      <div class="col-sm-2">
+        <input type="text" id="item_2_vat">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-sm-2">
+        <input type="text" id="item_3_code">
+      </div>
+      <div class="col-sm-2">
+        <input type="text" id="item_3_name">
+      </div>
+      <div class="col-sm-1">
+        <input type="text" id="item_3_size">
+      </div>
+      <div class="col-sm-1">
+        <input type="text" id="item_3_cnt">
+      </div>
+      <div class="col-sm-2">
+        <input type="text" id="item_3_price">
+      </div>
+      <div class="col-sm-2">
+        <input type="text" id="item_3_in_price">
+      </div>
+      <div class="col-sm-2">
+        <input type="text" id="item_3_vat">
+      </div>
+    </div>
+    
+    <div class="row mt-5">
+      <div class="col-md-4">
+        &nbsp;
+      </div>
+      <div class="col-md-4 text-center">
+        <div class="d-flex" style="justify-content: center;">
+            <div class="btn_outline_black w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;">작성 완료</div>
+            <div class="btn_outline_black w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;">취소</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        &nbsp;
+       </div>
+    </div>
+  </div>
+</form>
+
+{% block endscript %}
+
+
+{% endblock %}
+
+{% endblock %}
+
+

@@ -1,0 +1,39 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/login.css'%}">
+    <title>Ex-tech Kroea ERP</title>
+</head>
+<body>
+<form method="POST" enctype="multipart/form-data" id="insult_form" autocomplete="off" >
+    {% csrf_token %}
+    <div class="card">
+        <div class="card_title">Ex-Tech Korea ERP</div>
+        <input type="text" class="email" name="email" placeholder="이메일, @ex-techkorea.com">
+        {% if form.email.errors %}
+            <span style="color:red">{{form.email.errors}}</span>
+        {% endif %}
+        <input type="password" class="password" name="password" placeholder="패스워드">
+        {% if form.password.errors %}
+        <span style="color:red">{{form.password.errors}}</span>
+        {% endif %}
+        <div class="submit" role="button" onclick="document.getElementById('insult_form').submit(); this.onclick=null;">로그인</div>
+    </div>
+    <div class="bottom_bar"></div>
+    <div class="bottom_box">
+        <div class="item">이용약관</div>
+        <div class="item">개인정보처리지침</div>
+        <div class="item">운영정책</div>
+        <div class="item">문의</div>
+        <div class="item">공지사항</div>
+    </div>
+    <div class="bottom_box">
+        Copyright © <b>Ex-Tech Korea</b>. All rights reserved.
+    </div>
+</form>
+</body>
+</html>

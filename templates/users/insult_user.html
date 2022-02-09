@@ -1,0 +1,353 @@
+
+{% extends "base.html" %}
+
+{% block content_nav %}
+    <div class="content_nav">
+        <div class="location">인사 <i class="fas fa-chevron-right"></i> </div>
+        <div class="nav">
+            <div class="nav_item" role="button" onclick="location.href='{% url 'users:group' %}'">조직도</div>
+            <div class="nav_item active" role="button" onclick="location.href='{% url 'users:insult_user' %}'">사원등록</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'users:print' %}'">증명서인쇄</div>
+            <div class="nav_item" role="button" onclick="location.href='{% url 'users:file_box' %}'">계약서관리</div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+<form method="POST" enctype="multipart/form-data" id="insult_form" autocomplete="off" >
+  {% csrf_token %}
+  
+  <div class="content_row">
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="user_number">사원번호</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" name="user_number">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="username">성명</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" name="username">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="name_en">영문성명</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" name="name_en">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="people_number">주민등록번호</label>
+      </div>
+      <div class="col-md-11">
+          <input type="text" name="people_number">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="team_code">부서코드</label>
+      </div>
+      <div class="col-md-11">
+       <select name="team_code" class="h-100">
+          <option value="전략기획팀">전략기획팀</option>
+          <option value="교육팀">교육팀</option>
+          <option value="기술지원팀">기술지원팀</option>
+          <option value="설계팀">설계팀</option>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="level">직급</label>
+      </div>
+      <div class="col-md-11">
+        <select name="level" class="h-100">
+          <option value="사원">사원</option>
+          <option value="대리">대리</option>
+          <option value="과장">과장</option>
+          <option value="차장">차장</option>
+          <option value="부장">부장</option>
+          <option value="이사">이사</option>
+          <option value="대표">대표</option>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="staff_level">직위</label>
+      </div>
+      <div class="col-md-11">
+        <select name="staff_level" class="h-100">
+          <option value="0">대표이사</option>
+          <option value="1">팀장</option>
+          <option value="2" selected>일반 사원</option>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="phone">모바일</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" name="phone">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="email">Email</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" name="email">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="password">로그인비밀번호</label>
+      </div>
+      <div class="col-md-11">
+        <input type="password" name="password">
+      </div>
+    </div>
+    
+    <div class="row mb-3 mt-5">
+      <div class="col-md-1">
+        <label for="address">주소</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" name="address">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="comment">적요</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" name="comment">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="avatar">사진</label>
+      </div>
+      <div class="col-md-11">
+        <input type="file" name="avatar">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="account_pic">통장 사본</label>
+      </div>
+      <div class="col-md-11">
+        <input type="file" name="account_pic">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="people_card">주민등록증 사본</label>
+      </div>
+      <div class="col-md-11">
+        <input type="file" name="people_card">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="poeple_papper">등본 사본</label>
+      </div>
+      <div class="col-md-11">
+        <input type="file" name="poeple_papper">
+      </div>
+    </div>
+    <div class="row mb-3 mt-5">
+      <div class="col-md-1">
+        <label for="date_in">입사일자</label>
+      </div>
+      <div class="col-md-11">
+        <input type="date" name="date_in">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="date_type">입사구분</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" name="date_type">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="date_out">퇴사일자</label>
+      </div>
+      <div class="col-md-11">
+        <input type="date" name="date_out">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="out_comment">퇴사사유</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" name="out_comment">
+      </div>
+    </div>
+    <div class="row mb-3 mt-5">
+      <div class="col-md-1">
+        <label for="bank">은행</label>
+      </div>
+      <div class="col-md-11">
+        <select name="bank" class="h-100">
+          <option value="국민은행" selected>국민은행</option>
+          <option value="부산은행">부산은행</option>
+          <option value="기업은행">기업은행</option>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="account">계좌번호</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" name="account">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="account_ower">예금주</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" name="account_ower">
+      </div>
+    </div>
+
+    <div class="row mb-3 mt-5">
+      <div class="col-md-1">
+        <label for="car_number">차량번호</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" name="car_number">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="car_type">차종</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" name="car_type">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="car_cc">배기량(cc)</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" name="car_cc">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="car_oil">연료의 종류</label>
+      </div>
+      <div class="col-md-11">
+        <select name="car_oil" class="h-100">
+          <option value="휘발유" selected>휘발유</option>
+          <option value="경유">경유</option>
+          <option value="전기">전기</option>
+          <option value="수소">수소</option>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="car_auth_km">공인연비(km/L)</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" name="car_auth_km">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="car_real_km">실제연비(km/L)</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" name="car_real_km">
+      </div>
+    </div>
+
+    <div class="row mb-3 mt-5">
+      <div class="col-md-1">
+        <label for="graduation">학력사항</label>
+      </div>
+      <div class="col-md-11">
+        <input type="text" name="graduation">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="cert">자격/면허</label>
+      </div>
+      <div class="col-md-11">
+        <select multiple name="cert" class="h-100">
+          <option>IECEx Unit 001</option>
+          <option>IECEx Unit 002</option>
+          <option>IECEx Unit 003</option>
+          <option>IECEx Unit 004</option>
+          <option>IECEx Unit 005</option>
+          <option>IECEx Unit 006</option>
+        </select>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-1">
+        <label for="language">외국어</label>
+      </div>
+      <div class="col-md-11">
+        <select multiple name="language" class="h-100">
+          <option>영어 상</option>
+          <option>영어 중</option>
+          <option>영어 하</option>
+          <option>중국어 상</option>
+          <option>중국어 중</option>
+          <option>중국어 하</option>
+          <option>일본어 상</option>
+          <option>일본어 중</option>
+          <option>일본어 하</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row mt-5">
+      <div class="col-md-4">
+        &nbsp;
+      </div>
+      <div class="col-md-4 text-center">
+        <div class="d-flex" style="justify-content: center;">
+            <div onclick="document.getElementById('insult_form').submit(); this.onclick=null;" class="btn_outline_black w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;">작성 완료</div>
+            <div onclick="location.href='{% url 'users:group' %}'" class="btn_outline_black w_50" role="button" style="width:120px; border-radius: 4px; margin-right:10px;">취소</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        &nbsp;
+       </div>
+    </div>
+
+    <div class="row mt-5">
+      <div class="col-md-12">
+        &nbsp;
+       </div>
+    </div>
+  </div>
+</form>
+        
+
+{% block endscript %}
+
+{% endblock %}
+
+{% endblock %}
